@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+
+    <link href="/css/user/login.css" rel="stylesheet"/>
+    <!-- Boxicon-icons  -->
+
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+
+  </head>
+  <body>
+      
+    <header class="header">
+
+      <nav class="navbar">
+        <a href="#">Home</a>
+        <a href="#">About</a>
+        <a href="#">Services</a>
+        <a href="#">Home</a>
+        <a href="#">Contact</a>
+      </nav>
+      <form action="#" class="search-bar">
+        <input type="text" placeholder="Search...">
+        <button type="submit"><box-icon name='search'><i class='bx bx-search'></i></button>
+      </form>
+        <!-- <a href="/user/login">Sign in</a> -->
+      
+    </header>
+
+    <div class="background"></div>
+    <div class="container">
+      <div class="content">
+        <h2 class="logo">Meghaj</h2>
+        <div class="text-sci">
+          <h2>Welcome!<br><span>To Our New Website</span></h2>
+          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum velit libero eum omnis, iste distinctio tenetur soluta asperiores, enim eaque reprehenderit ipsum aut. Doloribus, quia quam autem perferendis ea qui.</p>
+          <div class="social-icons">
+            <a href="#"><i class='bx bxl-linkedin'></i></a>
+            <a href="#"><i class='bx bxl-facebook'></i></a>
+            <a href="#"><i class='bx bxl-instagram' ></i></a>
+            <a href="#"><i class='bx bxl-twitter' ></i></a>
+          </div>
+        </div>
+      </div>
+
+        <div class="logreg-box">
+
+          <div class="form-box login active">
+            <form onsubmit="login(event,'login')" id="loginform">
+
+            <h2>Sign In</h2>
+
+            <div class="errormessage_signin"><p></p></div>
+
+            <div class="input-box">
+              <span class="icon"><i class='bx bx-envelope'></i></span>
+              <input type="email" name="signin_email" id="signin_email" required>
+              <label for="signin_email" class="input-label">Email</label>
+            </div>
+
+            <div class="input-box">
+              <span class="icon"><i class='bx bxs-lock-alt'></i></span>
+              <input type="password" name="signin_password" id="signin_password" required>
+              <label for="signin_password" class="input-label">Password</label>
+            </div>
+
+            <div class="remember-forgot">
+              <label><input type="checkbox">Remember me</label>
+              <a href="#">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="btn">Sign In</button>
+
+            <div class="login-register">
+              <p>Don't have an account? <button type="button" class="register-link">Sign up</button></p>
+            </div>
+
+            </form>
+
+          </div>
+
+          <div class="form-box register">
+            <form onsubmit="login(event,'signup')" id="registerform">
+
+            <h2>Sign Up</h2>
+
+              <div class="errormessage_signup"><p></p></div>
+
+            <div class="input-box">
+              <span class="icon"><i class='bx bxs-user'></i></span>
+              <input type="name" name="signup_name" id="signup_name" required>
+              <label for="signup_name" class="input-label">Name</label>
+            </div>
+
+            <div class="input-box">
+              <span class="icon"><i class='bx bx-envelope'></i></span>
+              <input type="email" name="signup_email" id="signup_email" required>
+              <label for="signup_email" class="input-label">Email</label>
+            </div>
+
+            <div class="input-box">
+              <span class="icon"><i class='bx bxs-lock-alt'></i></span>
+              <input type="password" id="signup_password" name="signup_password" required>
+              <label for="signup_password" class="input-label">Password</label>
+            </div>
+
+            <div class="input-box">
+              <span class="icon"><i class='bx bxs-lock-alt'></i></span>
+              <input type="password" id="signup_confirmpassword" name="signup_confirmpassword" required>
+              <label for="signup_confirmpassword" class="input-label">Confirm Password</label>
+            </div>
+
+            <div class="input-box">
+              <span class="icon"><i class='bx bx-barcode'></i></span>
+              <input type="text" name="signup_referral" id="signup_referral" >
+              <label for="signup_referral" class="input-label">Referral Code (If any)</label>
+            </div>
+
+            <button type="submit" class="btn otp-link">Sign Up</button>
+
+            <div class="login-register">
+              <p>Already have an account?<button type="button" class="login-link">Sign in</button></p>
+            </div>
+
+            </form>
+
+          </div>
+
+          <div class="form-box otp">
+            <form onsubmit="login(event,'otp')" id="otpform">
+
+            <h2>Enter The Verification Code</h2>
+            <h2>Sent To Your Email</h2>
+
+            <div class="resend-otp-message"><P></P></div>
+
+            <div class="input-box">
+              <span class="icon"><i class='bx bx-envelope'></i></span>
+              <input type="text" name="otp" id="otp" required>
+              <label for="otp" class="input-label">Verification Code</label>
+            </div>
+
+            <button type="submit" class="btn">Verify</button>
+
+            <div class="login-otp">
+              <p>Don't get verification code? <button type="button" class="otp-link" onclick="login(event,'otp',true)">Click Here</button></p>
+            </div>
+
+            </form>
+
+          </div>
+
+        </div>
+      
+    </div>
+
+    <script>
+      function login(event,id,resend){
+
+        const errorMessage = document.querySelector('.errormessage_signup p');
+        const errorMessageLogin = document.querySelector('.errormessage_signin p');
+        const errorMessageOtp=document.querySelector(".resend-otp-message p");
+
+        const registerform = document.getElementById('registerform');
+        const otpform = document.getElementById('otpform');
+        event.preventDefault()
+
+        const form_data=new FormData(event.target)
+        let json_form={}
+        form_data.forEach((value,key)=>{
+          json_form[key]=value
+        });
+        
+        if(id==="signup"){
+
+          fetch("/user/signup",{
+            method:"POST",
+            headers:{
+              "Content-Type":"application/json"
+            },
+            body:JSON.stringify({
+              action:id,
+              formdata:json_form
+            })
+          })
+          .then(response=>{
+            return response.json()
+          })
+          .then((data)=>{
+            if(id==="signup"&&data.message==="Verification Code Send")
+            {
+              const customEvent=new CustomEvent("otp",{
+                bubbles:true,
+                cancelable:true
+              })
+              const targetElement=document.querySelector('.otp');
+              targetElement.dispatchEvent(customEvent);
+
+            }else{
+              errorMessage.innerHTML=data.message;
+              setTimeout(()=>errorMessage.innerHTML="",3000)
+            }
+          })
+          .catch(err=>console.log(err))
+
+        }else if(id==="otp"){
+          fetch("/user/signup",{
+            method:"POST",
+            headers:{
+              "Content-Type":"application/json"
+            },
+            body:JSON.stringify({
+              action:id,
+              formdata:json_form
+            })
+          })
+          .then(response=>{
+            if(response.ok)
+            return response.json()
+            else{
+              throw new Error("Invalid OTP") 
+            }
+
+          })
+          .then((data)=>{
+            console.log(data)
+              document.querySelector('.otp').classList.remove("active");
+              document.querySelector('.logreg-box .login').classList.add("active");
+              registerform.reset();
+              otpform.reset();
+              errorMessageLogin.innerHTML=data.message;
+              setTimeout(()=>errorMessageLogin.innerHTML="",3000)
+          })
+          .catch((err)=>{
+            errorMessageOtp.innerHTML=err.message;
+            setTimeout(()=>errorMessageOtp.innerHTML="",3000)
+          })
+        }
+        else if(id=="login"){
+          fetch("/user/login",{
+            method:"POST",
+            headers:{
+              "Content-Type":"application/json"
+            },
+            body:JSON.stringify(json_form)
+          })
+          .then(response=>{
+            if(response.ok){
+              window.location.href="/home"
+            }
+            else{
+              throw new Error("Invalid Username or Passsword")
+            }
+          })
+          .catch(err=>{
+            console.log(err)
+            errorMessageLogin.innerHTML=err.message
+            setTimeout(()=>errorMessageLogin.innerHTML="",3000)
+          })
+      }
+
+      }
+    </script>  
+    <script src="/js/user/login.js"></script>
+  </body>
+</html>
