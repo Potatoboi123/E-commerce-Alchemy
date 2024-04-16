@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile</title>
+  
+    <!-- Bootstrap link -->
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <!-- Stylesheet -->
+
+    <link rel="stylesheet" href="/css/user/useraddress.css">
+
+    <!-- Boxicon-icons  -->
+
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <style>
+      .modal-content{
+        color: white;
+        background-color: rgb(45, 43, 43);
+      }
+      .form-control{
+        background-color: transparent;
+        color: white;
+      }
+      .modal-content ::placeholder {
+        color: #afaaaa; 
+      }
+      .modal-content input:focus::placeholder {
+        color: #afaaaa; 
+      }
+    </style>
+    
+</head>
+<body>
+  <body>
+
+    <header class="header">
+
+        <div class="navbar">
+          <a href="/home">Home</a>
+          <a href="/product-list/list">Products</a>
+        </div>
+        <div class="search-bar-container">
+          <form action="/product-list/search" method="get" class="search-bar">
+            <input type="text" placeholder="Search..." name="search" id="search">
+            <button type="submit"><box-icon name='search'><i class='bx bx-search'></i></button>
+          </form>
+        <div class="right_navbar">
+          <a href="/user/wishlist"><i class='bx bx-heart'></i></a>
+          <a href="/user/cart"><i class='bx bx-cart'></i></a>
+          <a href="/user/profile"><i class='bx bx-user'></i></a>
+          <form action="/user/logout" method="post"><button type="submit" class="login_navbar">Logout</button></form>
+        </div>
+        </div>
+        
+    </header>
+
+
+
+  <nav class="sidebar close">
+    <header>
+      <div class="image-text">
+        <span class="image">
+          <img src="logo.png" alt="">
+        </span>
+
+        <div class="text logo-text">
+          <span class="name">[Name of Website]</span>
+          <span class="profession">Web developer</span>
+        </div>
+      </div>
+
+      <i class='bx bx-chevron-right toggle'></i>
+    </header>
+
+    <div class="menu-bar">
+      <div class="menu">
+
+        <ul class="menu-links">
+          <li class="nav-link">
+            <a href="/user/profile">
+              <i class='bx bx-home-alt icon'></i>
+              <span class="text nav-text">Profile</span>
+            </a>
+          </li>
+
+          <li class="nav-link">
+            <a href="/user/address">
+              <i class='bx bx-map icon'></i>
+              <span class="text nav-text">Manage Address</span>
+            </a>
+          </li>
+
+          <li class="nav-link">
+            <a href="/user/wishlist">
+              <i class='bx bx-heart icon'></i>
+              <span class="text nav-text">My Wishlist</span>
+            </a>
+          </li>
+
+          <li class="nav-link">
+            <a href="/user/order">
+              <i class='bx bx-shopping-bag icon'></i>
+              <span class="text nav-text">My orders</span>
+            </a>
+          </li>
+
+          <li class="nav-link">
+            <a href="/user/wallet">
+              <i class='bx bx-wallet icon'></i>
+              <span class="text nav-text">Wallet</span>
+            </a>
+          </li>
+
+          <li class="nav-link">
+            <a href="/user/coupon">
+              <i class='bx bxs-coupon icon'></i>
+              <span class="text nav-text">Coupon</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+      
+      </div>
+    </div>
+
+  </nav>
+
+  <section class="home">
+    <div class="text">Manage Address</div>
+
+    <div class="main">
+      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@getbootstrap">Add Address</button>
+      <div class="address-multiple">
+        <% if(addresses.length>0){ %>
+          <% addresses.forEach((address)=>{ %>
+
+            <div class="address-single">
+              <p><%= address.name %> <%= address.phoneNo %></p>
+              <p><%= address.address %>,<%= address.locality %>,<%= address.city %>,<%= address.state %>-<%= address.pincode %></p>
+              <button type="button" class="btn btn-primary views" data-toggle="modal" data-target="#modalEditAddress" data-whatever="@mdo" onclick="populateAddress(`<%= JSON.stringify(address )%>`)">Edit Address</button>
+              <button onclick="deleteAddress(this)" data-id="<%= address._id %>">Delete</button>
+            </div>
+            
+          <% }) %>
+          
+          <% }else{ %>
+            <p style="color: white;">No Address Added</p>
+            <% } %>
+      </div>
+    </div>
+  </section>
+
+  <!-- ADD ADDRESS BOOTSTRAP MODAL BEGIN -->
+ 
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add Address</h5>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="addAddress(event)">
+          <div class="form-group">
+            <label for="name" class="col-form-label">Name:</label>
+            <input type="text" class="form-control" id="name" name="name" placeholder="Name" required="true">
+          </div>
+          <div class="form-group">
+            <label for="phoneNo" class="col-form-label">Phone:</label>
+            <input type="number" class="form-control" id="phoneNo" name="phoneNo" placeholder="10-digit mobile number" required="true">
+          </div>
+          <div class="form-group">
+            <label for="pincode" class="col-form-label">Pincode:</label>
+            <input type="number" class="form-control" id="pincode" name="pincode" placeholder="Pincode" required="true">
+          </div>
+          <div class="form-group">
+            <label for="locality" class="col-form-label">Locality:</label>
+            <input type="text" class="form-control" id="locality" name="locality" placeholder="Locality" required="true">
+          </div>
+          <div class="form-group">
+            <label for="address" class="col-form-label">Address:</label>
+            <textarea class="form-control" id="address" name="address" placeholder="Address(Area and Street)" required="true"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="city" class="col-form-label">City/District/Town:</label>
+            <input type="text" class="form-control" id="city" name="city" placeholder="City/District/Town" required="true">
+          </div>
+          <div class="form-group">
+            <label for="state" class="col-form-label">State:</label>
+            <input type="text" class="form-control" id="state" name="state" placeholder="State" required="true">
+          </div>
+          <div class="form-group">
+            <label for="landmark" class="col-form-label">Landmark:</label>
+            <input type="text" class="form-control" id="landmark" name="landmark" placeholder="Landmark(Optional)">
+          </div>
+          <div class="form-group">
+            <label for="alternateNo" class="col-form-label">Alternate Phone no:</label>
+            <input type="number" class="form-control" id="alternateNo" name="alternateNo" placeholder="Alternate Phone No(Optional)">
+          </div>
+
+          <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+
+        </form>
+      </div>
+      
+    </div>
+  </div>
+</div>
+  <!-- ADD ADDRESS BOOTSTRAP MODAL END -->
+
+  <!-- EDIT ADDRESS BOOTSTRAP MODAL BEGIN -->
+ 
+<div class="modal fade" id="modalEditAddress" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Edit Address</h5>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="editAddress(event)">
+          <input type="hidden" value="" id="edit-id" name="id">
+          <div class="form-group">
+            <label for="edit-name" class="col-form-label">Name:</label>
+            <input type="text" class="form-control" id="edit-name" name="name" placeholder="Name" required="true">
+          </div>
+          <div class="form-group">
+            <label for="edit-phoneNo" class="col-form-label">Phone:</label>
+            <input type="number" class="form-control" id="edit-phoneNo" name="phoneNo" placeholder="10-digit mobile number" required="true">
+          </div>
+          <div class="form-group">
+            <label for="edit-pincode" class="col-form-label">Pincode:</label>
+            <input type="number" class="form-control" id="edit-pincode" name="pincode" placeholder="Pincode" required="true">
+          </div>
+          <div class="form-group">
+            <label for="edit-locality" class="col-form-label">Locality:</label>
+            <input type="text" class="form-control" id="edit-locality" name="locality" placeholder="Locality" required="true">
+          </div>
+          <div class="form-group">
+            <label for="edit-address" class="col-form-label">Address:</label>
+            <textarea class="form-control" id="edit-address" name="address" placeholder="Address(Area and Street)" required="true"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="edit-city" class="col-form-label">City/District/Town:</label>
+            <input type="text" class="form-control" id="edit-city" name="city" placeholder="City/District/Town" required="true">
+          </div>
+          <div class="form-group">
+            <label for="edit-state" class="col-form-label">State:</label>
+            <input type="text" class="form-control" id="edit-state" name="state" placeholder="State" required="true">
+          </div>
+          <div class="form-group">
+            <label for="edit-landmark" class="col-form-label">Landmark:</label>
+            <input type="text" class="form-control" id="edit-landmark" name="landmark" placeholder="Landmark(Optional)">
+          </div>
+          <div class="form-group">
+            <label for="edit-alternateNo" class="col-form-label">Alternate Phone no:</label>
+            <input type="number" class="form-control" id="edit-alternateNo" name="alternateNo" placeholder="Alternate Phone No(Optional)">
+          </div>
+
+          <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+
+        </form>
+      </div>
+      
+    </div>
+  </div>
+</div>
+  <!-- ADD ADDRESS BOOTSTRAP MODAL END -->
+
+  <script>
+    /* ADD Address BEGIN */
+    function addAddress(event){
+      event.preventDefault()
+      const form_data=new FormData(event.target)
+      let json_form={};
+      form_data.forEach((value,key)=>{
+        json_form[key]=value;
+      })
+      /* 
+
+      Validation Goes Here
+
+       */
+      fetch("/user/add_address",{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify(json_form)
+      })
+      .then((response)=>{
+        if(!response.ok){
+          return response.json()
+        }else{
+          window.location.href="/user/address";
+        }
+      })
+      .then((data)=>{
+        console.log(data.message)
+        Swal.fire(data.message);
+      })
+      .catch((err)=>{
+        Swal.fire("Some Error Occured.");
+      })
+    }
+
+    /* ADD Address END */
+
+    /* DELETE Address BEGIN */
+    
+    function deleteAddress(btn){
+
+        Swal.fire({
+          title: "Are you sure?",
+          text: "You won't be able to revert this!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+          if (result.isConfirmed) {
+            const buttonData = btn.getAttribute('data-id')
+            console.log(buttonData)
+            fetch("/user/deleteAddress/"+buttonData,{
+              method:"DELETE"
+            })
+            .then((response)=>{
+              if(response.ok){
+                const address=btn.closest("div")
+                address.remove();
+                Swal.fire({
+                  title: "Deleted!",
+                  text: "Your Address has been deleted.",
+                  icon: "success"
+                });
+              }else{
+                Swal.fire({
+                  title: "Sorry",
+                  text: "Sorry For The Inconvenince.We are Currently working on a solution.",
+                  icon: "error"
+                });
+              }
+            })
+            .catch((err)=>{console.log("error")})
+          }
+        })
+        .catch((err)=>{console.log("error")})
+    }
+    /* DELETE Address END */
+
+    /* EDIT Address POPULATE BEGIN */
+    function populateAddress(address){
+      const t=JSON.parse(address)
+      document.getElementById("edit-name").value=t.name;
+      document.getElementById("edit-phoneNo").value=t.phoneNo;
+      document.getElementById("edit-pincode").value=t.pincode;
+      document.getElementById("edit-locality").value=t.locality;
+      document.getElementById("edit-address").value=t.address;
+      document.getElementById("edit-city").value=t.city;
+      document.getElementById("edit-state").value=t.state;
+      document.getElementById("edit-landmark").value=t.landmark;
+      document.getElementById("edit-alternateNo").value=t.alternateNo;
+      document.getElementById("edit-id").value=t._id;
+      
+      
+    }
+    /* EDIT Address POPULATE END */
+    /* EDIT Address BEGIN */
+    function editAddress(event){
+      event.preventDefault()
+      const form_data=new FormData(event.target)
+      let json_form={};
+      form_data.forEach((value,key)=>{
+        json_form[key]=value;
+      })
+      console.log(json_form)
+      /* 
+
+      Validation Goes Here
+
+       */
+      fetch("/user/editAddress",{
+        method:"PUT",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify(json_form)
+      })
+      .then((response)=>{
+        if(!response.ok){
+          return response.json()
+        }else{
+          window.location.href="/user/address";
+        }
+      })
+      .then((data)=>{
+        console.log(data.message)
+        Swal.fire(data.message);
+      })
+      .catch((err)=>{
+        Swal.fire("Some Error Occured.");
+      })
+    }
+    /* EDIT Address END */
+  </script>
+
+  <script>
+    const body = document.querySelector('body'),
+      sidebar = body.querySelector('nav'),
+      toggle = body.querySelector(".toggle"),
+      searchBtn = body.querySelector(".search-box"),
+      modeSwitch = body.querySelector(".toggle-switch"),
+      modeText = body.querySelector(".mode-text");
+    toggle.addEventListener("click", () => {
+      sidebar.classList.toggle("close");
+    })
+    searchBtn.addEventListener("click", () => {
+      sidebar.classList.remove("close");
+    })
+    modeSwitch.addEventListener("click", () => {
+      body.classList.toggle("dark");
+      if (body.classList.contains("dark")) {
+        modeText.innerText = "Light mode";
+      } else {
+        modeText.innerText = "Dark mode";
+      }
+    });
+  </script>
+
+<!-- Bootsrtap script -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>    
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script></body>
+</body>
+
+</html>

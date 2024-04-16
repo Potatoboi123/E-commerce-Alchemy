@@ -9,30 +9,38 @@ const productSchema=new Schema({
     },
     price:{
         type: Number,
-        required:true
+        required:true,
+        min:0
     },
     description:{
         type: String,
         required: true
     },
     stock:{
-        type: Number,
-        required: true
+        type:Number,
+        required:true,
+        min:0
     },
     image:{
-        type: String,
+        type: [String],
         required: true
     },
-    is_listed:{
+    isListed:{
         type: Boolean,
+        default: true,
         required: true
     },
-    offer:{
+    discount:{
         type: Number,
+        default: 0
     },
     category:{
         type:Schema.Types.ObjectId,
         ref:"Category"
+    },
+    createdAt:{
+        type:Date,
+        default:Date.now
     }
 });
 

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Product List</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,200;0,300;0,400;0,500;0,700;0,800;1,200;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="/css/product/productlist/animate.css">
+    
+    <link rel="stylesheet" href="/css/product/productlist/owl.carousel.min.css">
+    <link rel="stylesheet" href="/css/product/productlist/owl.theme.default.min.css">
+    <link rel="stylesheet" href="/css/product/productlist/magnific-popup.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.min.css">
+    
+    <link rel="stylesheet" href="/css/product/productlist/flaticon.css">
+    <link rel="stylesheet" href="/css/product/productlist/style.css">
+
+    <!-- Boxicon-icons  -->
+
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <style>
+      
+      /* input {
+      border: 3px solid grey;
+      border-radius: 3px;
+      }
+
+      input:-webkit-autofill {
+        border: 3px solid blue;
+      }
+      input:autofill {
+        border: 3px solid blue;
+      } */
+
+      body{
+        background-color: black;
+      }
+      .categories{
+        background-color: black;
+      }
+      .categories ul li a{
+        color: white;
+      }
+      .desc p a i{
+        font-size: 25px;
+      }
+      .meta-prod button {
+        margin: 0 2px;
+        width: 60px;
+        height: 60px;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        background: none;
+        cursor: pointer;
+    }
+    .meta-prod button i{
+      color: #b7472a;
+      font-size: 25px;
+    }
+    </style>
+  </head>
+  <body>
+
+    <header class="header">
+
+        <nav class="navbar">
+          <a href="/home">Home</a>
+          <a href="/product-list/list">Products</a>
+        </nav>
+        <div class="search-bar-container">
+          <form action="/product-list/search" method="get" class="search-bar">
+          <input type="text" placeholder="Search..." name="search" id="search">
+          <button type="submit"><box-icon name='search'><i class='bx bx-search'></i></button>
+        </form>
+        <div class="right_navbar">
+          <a href="/user/wishlist"><i class='bx bx-heart'></i></a>
+          <a href="/user/cart"><i class='bx bx-cart'></i></a>
+          <a href="/user/profile"><i class='bx bx-user'></i></a>
+          <form action="/user/logout" method="post" ><button type="submit" class="login_navbar">Logout</button></form>
+        </div>
+        </div>
+        
+    </header>
+    
+    <section class="hero-wrap hero-wrap-2" style="background-image: url('/images/product/bg_2.jpg');" data-stellar-background-ratio="0.5">
+      <div class="overlay"></div>
+      <div class="container">
+        <div class="row no-gutters slider-text align-items-end justify-content-center">
+          <div class="col-md-9 ftco-animate mb-5 text-center">
+          	<p class="breadcrumbs mb-0"><span class="mr-2"><a href="/home">Home <i class="fa fa-chevron-right"></i></a></span> <span>Products <i class="fa fa-chevron-right"></i></span></p>
+            <h2 class="mb-0 bread">Products</h2>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ftco-section">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-9">
+						<div class="row mb-4">
+							
+						</div>
+            <% if(products.length>0) {%>
+						<div class="row">
+                      <% products.forEach((product)=> {%>
+							<div class="col-md-4 d-flex">
+								<div class="product ftco-animate">
+									<div class="img d-flex align-items-center justify-content-center" style="background-image: url('<%= product.image[0] %>');">
+										<div class="desc">
+											<p class="meta-prod d-flex">
+												<button class="d-flex align-items-center justify-content-center" type="button" onclick="addToCart(`<%=product._id %>`)"><i class='bx bx-cart'></i></button>
+												<a href="#" class="d-flex align-items-center justify-content-center"><i class='bx bx-heart'></i></a>
+												<a href="/product-details/<%=product._id %>" class="d-flex align-items-center justify-content-center"><i class='bx bx-info-circle'></i></a>
+											</p>
+										</div>
+									</div>
+									<div class="text text-center">
+										<span class="sale">Sale</span>
+										<span class="category"><%= product.category.name %></span>
+										<h2 style="color: white;"><%= product.name %></h2>
+										<p class="mb-0"><span class="price price-sale" ><% if(product.stock==0){ %>Out Of Stock <% }else{ %><%= product.price %> <% } %></span> <span class="price" style="color:white;"><% if(product.stock>0){ %> $49.00 <% } %> </span></p>
+									</div>
+								</div>
+							</div>
+                      <% }) %>
+							
+						</div>
+						<div class="row mt-5">
+		          <div class="col text-center">
+		            <div class="block-27">
+		              <ul>
+		                
+                    <% if(currentPage!==1 && previousPage!=1){ %>
+		                <li><a href="/product-list/<%= action %>?<% if(search){%>search=<%= search %>&<%} %>page=1 ">1</a></li>
+                      <% } %>
+                      <% if(hasPreviousPage){ %>
+		                <li><a href="/product-list/<%= action %>?<% if(search){%>search=<%= search %>&<%} %>page=<%= previousPage %> "><%= previousPage %></a></li>
+                      <% } %>
+                    <li class="active"><a href="/product-list/<%= action %>?<% if(search){%>search=<%= search %>&<%} %>page=<%= currentPage %>"><%= currentPage %></a></li>
+                    
+		                <% if(hasNextPage){ %>
+		                <li><a href="/product-list/<%= action %>?<% if(search){%>search=<%= search %>&<%} %>page=<%= nextPage %>"><%= nextPage %></a></li>
+                      <% } %>
+                    <% if(lastPage!==currentPage && nextPage!==lastPage){ %>
+                      <li><a href="/product-list/<%= action %>?<% if(search){%>search=<%= search %>&<%} %>page=<%= lastPage %>"><%= lastPage %></a></li>
+                      <% } %>
+		              </ul>
+		            </div>
+		          </div>
+		        </div>
+					</div>
+          
+					<div class="col-md-3">
+						<div class="sidebar-box ftco-animate">
+              <div class="categories">
+                <h3 style="color: white;">Filter</h3>
+                <ul class="p-0">
+                	<li><a href="/product-list/lowToHigh<% if(search){%>?search=<%= search %><%}%>" >Price:low to high <span class="fa fa-chevron-right"></span></a></li>
+	                <li><a href="/product-list/highToLow<% if(search){%>?search=<%= search %><%}%>">Price:high to low <span class="fa fa-chevron-right"></span></a></li>
+	                <li><a href="#">Popularity <span class="fa fa-chevron-right"></span></a></li>
+	                <li><a href="#">Featured <span class="fa fa-chevron-right"></span></a></li>
+	                <li><a href="/product-list/newArrivals<% if(search){%>?search=<%= search %><%}%>">New Arrivals <span class="fa fa-chevron-right"></span></a></li>
+	                <li><a href="/product-list/aA-Zz<% if(search){%>?search=<%= search %><%}%>">aA-Zz <span class="fa fa-chevron-right"></span></a></li>
+	                <li><a href="/product-list/Zz-aA<% if(search){%>?search=<%= search %><%}%>">Zz-aA <span class="fa fa-chevron-right"></span></a></li>
+                </ul>
+              </div>
+            </div>
+            <% }else{ %>
+            <h2 style="text-align: center; color: white;">NO PRODUCTS</h2>
+            <% } %>
+					</div>
+				</div>
+			</div>
+		</section>
+
+    
+  
+  <!-- loader -->
+  <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
+
+  <script>
+    function addToCart(id){
+      fetch("/user/add_cart/"+id,{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        }
+      })
+      .then((response)=>{
+        if(response.ok){
+          Swal.fire({
+            title: 'Product Added',
+            text: 'Your product has been added to the cart.',
+            icon: 'success',
+            showCancelButton: true,
+            cancelButtonText: 'Continue Browsing',
+            showConfirmButton: true,
+            confirmButtonText: 'Go to Cart',
+            allowOutsideClick: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/user/cart';
+                }
+            });
+          }else{
+            return response.json();
+          }
+        })
+        .then((data)=>{
+          if(data.outOfStock){
+            Swal.fire({
+              title: "Out Of Stock",
+              text: "The product is not in stock.",
+              icon: "error"
+            });
+          }else{
+            throw new Error("Something Happened")
+          }
+        })
+      .catch((err)=>{
+        console.log("Something Happened")
+      })
+      
+    }
+  </script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>    
+
+  <script src="/js/product/productlist/jquery.min.js"></script>
+  <script src="/js/product/productlist/jquery-migrate-3.0.1.min.js"></script>
+  <script src="/js/product/productlist/popper.min.js"></script>
+  <script src="/js/product/productlist/bootstrap.min.js"></script>
+  <script src="/js/product/productlist/jquery.easing.1.3.js"></script>
+  <script src="/js/product/productlist/jquery.waypoints.min.js"></script>
+  <script src="/js/product/productlist/jquery.stellar.min.js"></script>
+  <script src="/js/product/productlist/owl.carousel.min.js"></script>
+  <script src="/js/product/productlist/jquery.magnific-popup.min.js"></script>
+  <script src="/js/product/productlist/jquery.animateNumber.min.js"></script>
+  <script src="/js/product/productlist/scrollax.min.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
+  <script src="/js/product/productlist/google-map.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+  <script src="/js/product/productlist/main.js"></script>
+    
+  </body>
+</html>

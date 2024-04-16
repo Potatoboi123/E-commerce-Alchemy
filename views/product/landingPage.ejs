@@ -16,10 +16,62 @@
     <!-- Boxicon-icons  -->
 
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <style>
+      .button-group{
+        display: flex;
+        gap: 30px;
+      }
+      .button-group button{
+        background: transparent;
+        border: none;
+      }
+      .button-group i{
+        font-size: 30px;
+        color: white;
+      }
+      #myVideo {
+        position: relative;
+      width: 100%;
+      height: 100%;
+      }
+      ::-webkit-scrollbar-track {
+    background-color: #000000; /* Color of the scrollbar track */
+}
+::-webkit-scrollbar {
+    width: 10px; /* Width of the scrollbar */
+}
+::-webkit-scrollbar-thumb {
+    background-color: #494747; /* Color of the scrollbar thumb */
+    border-radius: 6px; /* Rounded corners of the scrollbar thumb */
+}
+.video-div{
+        position: absolute;
+        top: 50%;
+        left: 50%; /* Align to the right side */
+        transform: translate(-50%,-50%); /* Center vertically */
+        color: rgba(255, 255, 255, 0.796);
+        
+      }
+      .video-div h2{
+        font-weight: 600;
+        font-size: 5rem;
+      }
+      .video-div p{
+        font-size: 1.3rem;
+        font-family: "Georgia", serif;
+      }
+
+    </style>
 </head>
 <body>
 
+
+  <div class="overlay">
+    <span class="loader"></span>
+  </div>
     <!-- <div class="background-1">
+
+      
 
     </div> -->
     <header class="header">
@@ -35,79 +87,105 @@
         </form>
         <div class="right_navbar">
           <a href="#"><i class='bx bx-heart'></i></a>
-          <a href=""><i class='bx bx-cart'></i></a>
-          <a href=""><i class='bx bx-user'></i></a>
+          <a href="#"><i class='bx bx-cart'></i></a>
+          <a href="#"><i class='bx bx-user'></i></a>
           <a href="/user/login" class="login_navbar">Login</a>
         </div>
         </div>
         
     </header>
 
-      <div id="carouselExampleAutoplaying" class="carousel slide hidden" data-bs-ride="carousel">
-        <div class="carousel-inner">
-          <div class="carousel-item active">
-            <img src="./images/product/banner1-1.png" class="d-block w-100" alt="banner">
-          </div>
-          <div class="carousel-item">
-            <img src="./images/product/banner1-2.png" class="d-block w-100" alt="banner">
-          </div>
-          <div class="carousel-item">
-            <img src="./images/product/banner1-1.png" class="d-block w-100" alt="banner">
-          </div>
-        </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="prev">
-          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="next">
-          <span class="carousel-control-next-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Next</span>
-        </button>
-        
-      </div>
+    <video autoplay muted loop id="myVideo">
+      <source src="/video/jackDaniels.mp4" type="video/mp4">
+    </video>
 
-    <div class="collection_choice">
-        <div class="choice hidden">
-            <img src="./images/product/choice-img.png" alt="image">
-        </div>
-        <div class="choice hidden">
-            <img src="./images/product/choice-img.png" alt="image">
-        </div>
-        <div class="choice hidden">
-            <img src="./images/product/choice-img.png" alt="image">
-        </div>
-        <div class="choice hidden">
-            <img src="./images/product/choice-img.png" alt="image">
-        </div>
+    <div class="video-div">
+      <h2 style="text-align: center;">Alchemy</h2>
+      <p>Explore our wide selection of premium spirits, wines, and beers.</p>
     </div>
 
-    <h2 class="heading-2">New </br> <span>Arrival</span></h2>
+    <!-- <a href="">Shop Now</a> -->
 
-    <!-- The product code goes here -->
-
-
-      
-
-    <!-- <section class="hidden one">
-        <h1>Hello</h1>
-        <p>This is a website</p>
-    </section>
-
-    <section class="hidden two">
-        <h2>The products</h2>
-        <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sapiente itaque aperiam officia veniam quas. Dicta ex fugiat, sapiente totam quisquam distinctio. Quod adipisci id quo, saepe temporibus et sit facilis!</p>
-    </section>
-
-    <section class="hidden three">
-        <h2>Good</h2>
-    </section> -->
+  <div class="collection_choice">
+    <!-- <div class="choice hidden">
+          <img src="./images/product/choice-img.png" alt="image">
+      </div> -->
     
-    <!-- Bootsrtap script -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+      <div class="container">
+        <div class="card__container">
+          <% categories.forEach((category)=>{ %>
 
-    <!-- My script -->
+            <article class="card__article hidden">
+              <div class="card__img">
+                <img src="<%= category.image %>" alt="image" >
+              </div>
+            
 
-    <script src="js/product/landingPage.js"></script>
+            <div class="card__data">
+                <!-- <span class="card__description">Vancouver Mountains, Canada</span> -->
+                <h2 class="card__title"><%= category.name %></h2>
+                <a href="#" class="card__button">Shop Now</a>
+            </div>
+          </article>
+
+          <% }) %>
+           
+
+        </div>
+     </div>
+    
+      
+      
+  </div>
+
+  <div><h2 class="heading-2">New </br> <span>Arrival</span></h2></div>
+
+  <div class="products_list">
+    <% display_products.forEach((product)=>{ %>
+      <div class="product__card hidden">
+        <div class="product__image">
+          <img src="<%= product.image[0] %>"/>
+        </div>
+        <div class="product__details">
+          <div class="product__center">
+            <h1><%= product.name %></h1>
+            <p><%= product.category.name %></p>
+            <p>$<%= product.price %></p>
+            <div class="button-group">
+             <button ><i class='bx bx-cart'></i></button>
+            <button ><i class='bx bx-heart'></i></button>
+            <a href="/product-details/<%= product._id %>"><i class='bx bx-info-circle'></i></a> 
+            </div>
+            
+          </div>
+        </div>
+      </div>
+    <% }) %>
+    
+
+  </div>
+  
+  <!-- Bootsrtap script -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+  <!-- My script -->
+
+  <script>
+
+    /* LOADER WHEN WINDOW LOADS BEGIN*/
+    document.addEventListener("DOMContentLoaded", function() {
+    let overlay = document.querySelector(".overlay");
+    overlay.style.display = "flex"; 
+      
+    window.addEventListener("load", function() {
+      overlay.style.display = "none"; 
+    });
+    });
+    /* LOADER WHEN WINDOW LOADS END*/
+    
+  </script>
+
+  <script src="js/product/landingPage.js"></script>
 
 </body>
 </html>

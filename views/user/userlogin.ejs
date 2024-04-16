@@ -13,15 +13,20 @@
 
   </head>
   <body>
+
+    <div class="overlay">
+      <span class="loader"></span>
+    </div>
+    
       
     <header class="header">
 
       <nav class="navbar">
-        <a href="#">Home</a>
-        <a href="#">About</a>
+        <a href="/">Home</a>
+        <!-- <a href="#">About</a>
         <a href="#">Services</a>
-        <a href="#">Home</a>
-        <a href="#">Contact</a>
+        <a href="#">Blog</a>
+        <a href="#">Contact</a> -->
       </nav>
       <form action="#" class="search-bar">
         <input type="text" placeholder="Search...">
@@ -50,7 +55,7 @@
         <div class="logreg-box">
 
           <div class="form-box login active">
-            <form onsubmit="login(event,'login')" id="loginform">
+            <form onsubmit="login(event)" id="loginform">
 
             <h2>Sign In</h2>
 
@@ -70,10 +75,12 @@
 
             <div class="remember-forgot">
               <label><input type="checkbox">Remember me</label>
-              <a href="#">Forgot password?</a>
+              <button class="forgot-link" type="button">Forgot password?</button>
             </div>
 
             <button type="submit" class="btn">Sign In</button>
+            <h3>OR</h3>
+            <a class="button google" href="/user/google">Sign In With Google<i class='bx bxl-google'></i></a>
 
             <div class="login-register">
               <p>Don't have an account? <button type="button" class="register-link">Sign up</button></p>
@@ -84,15 +91,15 @@
           </div>
 
           <div class="form-box register">
-            <form onsubmit="login(event,'signup')" id="registerform">
+            <form onsubmit="signup(event)" id="registerform">
 
             <h2>Sign Up</h2>
 
-              <div class="errormessage_signup"><p></p></div>
+              <div class="errormessage_signup" style="display: flex;"><p></p></div>
 
             <div class="input-box">
               <span class="icon"><i class='bx bxs-user'></i></span>
-              <input type="name" name="signup_name" id="signup_name" required>
+              <input type="name" name="signup_name" id="signup_name" minlength="2" maxlength="50" required>
               <label for="signup_name" class="input-label">Name</label>
             </div>
 
@@ -131,12 +138,12 @@
           </div>
 
           <div class="form-box otp">
-            <form onsubmit="login(event,'otp')" id="otpform">
+            <form onsubmit="otpfun(false)" id="otpform">
 
             <h2>Enter The Verification Code</h2>
             <h2>Sent To Your Email</h2>
 
-            <div class="resend-otp-message"><P></P></div>
+            <div class="resend_otp_message"><p></p></div>
 
             <div class="input-box">
               <span class="icon"><i class='bx bx-envelope'></i></span>
@@ -144,11 +151,79 @@
               <label for="otp" class="input-label">Verification Code</label>
             </div>
 
+            <p class="timer-otp"></p>
+
             <button type="submit" class="btn">Verify</button>
 
             <div class="login-otp">
-              <p>Don't get verification code? <button type="button" class="otp-link" onclick="login(event,'otp',true)">Click Here</button></p>
+              <p>Don't get verification code? <button type="button" class="otp-link" onclick="otpfun(true)">Click Here</button></p>
             </div>
+
+            </form>
+
+          </div>
+
+          <div class="form-box forgot_email">
+            <form onsubmit="forgotemail(event)" id="forgotform-email">
+
+            <h2>Enter Your Email</h2>
+
+            <div class="forgot_email_message"><p></p></div>
+
+            <div class="input-box">
+              <span class="icon"><i class='bx bx-envelope'></i></span>
+              <input type="email" name="email" id="forgot" required>
+              <label for="forgot" class="input-label">Email</label>
+            </div>
+
+            <button type="submit" class="btn">Verify</button>
+
+            </form>
+
+          </div>
+
+          <div class="form-box forgot_otp">
+            <form onsubmit="forgototp(event)" id="forgotform-otp">
+
+              <h2>Enter The Verification Code</h2>
+              <h2>Sent To Your Email</h2>
+
+            <div class="forgot_otp_message"><P></P></div>
+
+            <div class="input-box">
+              <span class="icon"><i class='bx bxs-lock-alt'></i></span>
+              <input type="text" name="otp" id="forgot_otp" required>
+              <label for="forgot_otp" class="input-label">Verification Code</label>
+            </div>
+
+            <p class="timer-forgot"></p>
+
+            <button type="submit" class="btn">Submit</button>
+
+            </form>
+
+          </div>
+
+          <div class="form-box forgot_password">
+            <form onsubmit="forgotpassword(event)" id="forgotform-password">
+
+            <h2>Enter Your New Password</h2>
+
+            <div class="forgot_password_message"><P></P></div>
+
+            <div class="input-box">
+              <span class="icon"><i class='bx bxs-lock-alt'></i></span>
+              <input type="password" name="password" id="forgot_pass" required>
+              <label for="forgot_pass" class="input-label">New Password</label>
+            </div>
+
+            <div class="input-box">
+              <span class="icon"><i class='bx bxs-lock-alt'></i></span>
+              <input type="password" name="confirmpassword" id="forgot_conpass" required>
+              <label for="forgot_conpass" class="input-label">Confirm Password</label>
+            </div>
+
+            <button type="submit" class="btn">Submit</button>
 
             </form>
 
@@ -158,15 +233,34 @@
       
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" ></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.js"></script>
+
     <script>
-      function login(event,id,resend){
+      let time=60;
+      let timer;
+
+      /* LOADER WHEN WINDOW LOADS BEGIN*/
+      document.addEventListener("DOMContentLoaded", function() {
+      let overlay = document.querySelector(".overlay");
+      overlay.style.display = "flex"; 
+        
+      window.addEventListener("load", function() {
+        overlay.style.display = "none"; 
+      });
+      });
+      /* LOADER WHEN WINDOW LOADS END*/
+
+      function signup(event){
+
+        const loader=document.querySelector(".overlay");
+        loader.style.display="flex"
 
         const errorMessage = document.querySelector('.errormessage_signup p');
-        const errorMessageLogin = document.querySelector('.errormessage_signin p');
-        const errorMessageOtp=document.querySelector(".resend-otp-message p");
-
         const registerform = document.getElementById('registerform');
-        const otpform = document.getElementById('otpform');
+
+        let regex = /^[a-zA-Z\s]*$/
+
         event.preventDefault()
 
         const form_data=new FormData(event.target)
@@ -174,16 +268,29 @@
         form_data.forEach((value,key)=>{
           json_form[key]=value
         });
-        
-        if(id==="signup"){
 
-          fetch("/user/signup",{
+        if(json_form.signup_confirmpassword!=json_form.signup_password){
+          errorMessage.innerHTML="Password is not the same";
+          loader.style.display="none"
+          return setTimeout(()=>errorMessage.innerHTML="",5000)
+        }else if(!regex.test(json_form.signup_name)){
+          errorMessage.innerHTML="Name should not contain special characters";
+          loader.style.display="none"
+          return setTimeout(()=>errorMessage.innerHTML="",5000)
+        }else if(json_form.signup_name.trim()===""){
+          errorMessage.innerHTML="Enter Valid name";
+          loader.style.display="none"
+          return setTimeout(()=>errorMessage.innerHTML="",5000)
+        }
+
+        console.log(json_form)
+
+        fetch("/user/signup",{
             method:"POST",
             headers:{
               "Content-Type":"application/json"
             },
             body:JSON.stringify({
-              action:id,
               formdata:json_form
             })
           })
@@ -191,30 +298,64 @@
             return response.json()
           })
           .then((data)=>{
-            if(id==="signup"&&data.message==="Verification Code Send")
+            if(data.message==="Verification Code Send")
             {
               const customEvent=new CustomEvent("otp",{
                 bubbles:true,
                 cancelable:true
               })
+              time=60;
+              timer=setInterval(()=>{
+                document.querySelector(".timer-otp").innerHTML=time--
+                if(time<=0){
+                  clearTimeout(timer)
+                  time=60;
+                  document.querySelector(".timer-otp").innerHTML=""
+                }
+              },1000)
+
               const targetElement=document.querySelector('.otp');
               targetElement.dispatchEvent(customEvent);
+              loader.style.display="none"
 
             }else{
               errorMessage.innerHTML=data.message;
               setTimeout(()=>errorMessage.innerHTML="",3000)
+              loader.style.display="none"
             }
           })
-          .catch(err=>console.log(err))
+          .catch(err=>{
+            errorMessage.innerHTML=data.message;
+            setTimeout(()=>errorMessage.innerHTML="",3000)
+            loader.style.display="none"
+          })
+      }
 
-        }else if(id==="otp"){
-          fetch("/user/signup",{
+      function otpfun(action){
+
+        const loader=document.querySelector(".overlay");
+        loader.style.display="flex"
+        
+        const errorMessageLogin = document.querySelector('.errormessage_signin p');
+        const errorMessageOtp=document.querySelector(".resend_otp_message p");
+        const otpform = document.getElementById('otpform');
+        const registerform = document.getElementById('registerform');
+
+        event.preventDefault()
+
+        const form_data=new FormData(otpform)
+        let json_form={}
+        form_data.forEach((value,key)=>{
+          json_form[key]=value
+        });
+
+        fetch("/user/otp",{
             method:"POST",
             headers:{
               "Content-Type":"application/json"
             },
             body:JSON.stringify({
-              action:id,
+              action:action,
               formdata:json_form
             })
           })
@@ -227,20 +368,50 @@
 
           })
           .then((data)=>{
-            console.log(data)
+            
+            if(action){
+              errorMessageOtp.innerHTML=data.message;
+              setTimeout(()=>errorMessageOtp.innerHTML="",3000)
+              clearTimeout(timer)
+              time=60;
+              timer=setInterval(()=>{document.querySelector(".timer-otp").innerHTML=time--;
+              if(time<=0){
+                clearInterval(timer)
+                time=60;
+                document.querySelector(".timer-otp").innerHTML="";
+              }
+              },1000)
+            }else{
               document.querySelector('.otp').classList.remove("active");
               document.querySelector('.logreg-box .login').classList.add("active");
               registerform.reset();
               otpform.reset();
+              clearInterval(timer)
               errorMessageLogin.innerHTML=data.message;
               setTimeout(()=>errorMessageLogin.innerHTML="",3000)
+            }
+            loader.style.display="none";
+            
           })
           .catch((err)=>{
             errorMessageOtp.innerHTML=err.message;
             setTimeout(()=>errorMessageOtp.innerHTML="",3000)
+            loader.style.display="none";
           })
-        }
-        else if(id=="login"){
+      }
+
+      function login(event){
+
+        const errorMessageLogin = document.querySelector('.errormessage_signin p');
+
+        event.preventDefault()
+
+        const form_data=new FormData(event.target)
+        let json_form={}
+        form_data.forEach((value,key)=>{
+          json_form[key]=value
+        });
+        
           fetch("/user/login",{
             method:"POST",
             headers:{
@@ -253,17 +424,155 @@
               window.location.href="/home"
             }
             else{
-              throw new Error("Invalid Username or Passsword")
+              return response.json()
             }
           })
+          .then((data)=>{throw new Error(data.message)})
           .catch(err=>{
-            console.log(err)
             errorMessageLogin.innerHTML=err.message
             setTimeout(()=>errorMessageLogin.innerHTML="",3000)
           })
       }
 
+      function forgotemail(event){
+
+        const loader=document.querySelector(".overlay");
+        loader.style.display="flex"
+
+        const errorMessage = document.querySelector('.forgot-email-message p');
+
+        event.preventDefault()
+
+        const form_data=new FormData(event.target)
+        let json_form={}
+        form_data.forEach((value,key)=>{
+          json_form[key]=value
+        });
+
+        fetch("/user/forgot_email",{
+            method:"POST",
+            headers:{
+              "Content-Type":"application/json"
+            },
+            body:JSON.stringify(json_form)
+          })
+          .then(response=>{
+            if(response.ok)
+            return response.json()
+          else
+          throw new Error(response.statusText)
+          })
+          .then((data)=>{
+              const customEvent=new CustomEvent("forgotemail",{
+                bubbles:true,
+                cancelable:true
+              })
+              const targetElement=document.querySelector('.forgot_email');
+              targetElement.dispatchEvent(customEvent);
+              loader.style.display="none"
+          })
+          .catch(err=>{
+            errorMessage.innerHTML=err.message;
+            setTimeout(()=>errorMessage.innerHTML="",3000)
+            loader.style.display="none"
+          })
       }
+
+      function forgotpassword(event){
+
+        const loader=document.querySelector(".overlay");
+        loader.style.display="flex";
+
+        const errorMessage = document.querySelector('.forgot_password_message p');
+        const errorMessageOtp = document.querySelector('.forgot_otp_message p');
+        
+
+        event.preventDefault()
+
+        const form_data=new FormData(event.target)
+        let json_form={}
+        form_data.forEach((value,key)=>{
+          json_form[key]=value
+        });
+
+        fetch("/user/forgot_password",{
+            method:"POST",
+            headers:{
+              "Content-Type":"application/json"
+            },
+            body:JSON.stringify(json_form)
+          })
+          .then(response=>{
+            if(response.ok)
+            return response.json()
+          else
+          throw new Error(response.statusText)
+          })
+          .then((data)=>{
+              const customEvent=new CustomEvent("forgotpassword",{
+                bubbles:true,
+                cancelable:true
+              })
+              const targetElement=document.querySelector('.forgot_password');
+              targetElement.dispatchEvent(customEvent);
+              loader.style.display="none";
+              errorMessageOtp .innerHTML=data.message
+              setTimeout(()=>errorMessageOtp .innerHTML="",3000)
+          })
+          .catch(err=>{
+            errorMessage.innerHTML=err.message;
+            setTimeout(()=>errorMessage.innerHTML="",3000)
+            loader.style.display="none"
+          })
+      }
+
+      function forgototp(event){
+
+        const loader=document.querySelector(".overlay");
+        loader.style.display="flex";
+
+        const errorMessage = document.querySelector('.forgot_otp_message p');
+        const errorMessageLogin = document.querySelector('.errormessage_signin p');
+
+        event.preventDefault()
+
+        const form_data=new FormData(event.target)
+        let json_form={}
+        form_data.forEach((value,key)=>{
+          json_form[key]=value
+        });
+
+        fetch("/user/forgot_otp",{
+            method:"POST",
+            headers:{
+              "Content-Type":"application/json"
+            },
+            body:JSON.stringify(json_form)
+          })
+          .then(response=>{
+            if(response.ok)
+            return response.json()
+          else
+          throw new Error(response.statusText)
+          })
+          .then((data)=>{
+              const customEvent=new CustomEvent("forgototp",{
+                bubbles:true,
+                cancelable:true
+              })
+              const targetElement=document.querySelector('.forgot_otp');
+              targetElement.dispatchEvent(customEvent);
+              loader.style.display="none";
+              errorMessageLogin.innerHTML=data.message
+              setTimeout(()=>errorMessageLogin.innerHTML="",3000)
+          })
+          .catch(err=>{
+            errorMessage.innerHTML=err.message;
+            setTimeout(()=>errorMessage.innerHTML="",3000)
+            loader.style.display="none"
+          })
+      }
+
     </script>  
     <script src="/js/user/login.js"></script>
   </body>

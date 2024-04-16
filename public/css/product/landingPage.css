@@ -1,5 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
+/*========== Responsive typography ==========*/
+@media screen and (min-width: 1120px) {
+    :root {
+      --h2-font-size: 1.5rem;
+      --small-font-size: .875rem;
+    }
+  }
+
 *{
     margin: 0;
     padding: 0;
@@ -11,10 +19,11 @@ body{
     background: #020410;
 }
 
-img{
-    height: 100%;
-    width: 100%;
-}
+img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
 
 .header{
     position: fixed;
@@ -22,7 +31,7 @@ img{
     left: 0;
     width: 100%;
     padding: 2% 12.5%;
-    background: rgba(0, 0, 0, 0.263);
+    background: rgba(0, 0, 0, 0.67);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -98,44 +107,50 @@ img{
 }
 
 .search-bar input {
-    width: 100%;
-    background: transparent;
-    border: none;
-    outline: none;
-    font-size: 16px;
-    color: #e4e4e4;
-    padding-left: 10px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  color: #e4e4e4;
+  padding-left: 10px;
 }
 
 .search-bar input::placeholder{
-    color: #e4e4e4;
+  color: #e4e4e4;
 }
 
 .search-bar button{
-    width: 40px;
-    height: 100%;
-    background: transparent;
-    border: none;
-    outline: none;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
+  width: 40px;
+  height: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
 }
 
 .search-bar button i {
-    font-size: 22px;
-    color: #e4e4e4;
+  font-size: 22px;
+  color: #e4e4e4;
+}
+
+.right_navbar form button{
+    background: transparent;
+    border: none;
 }
 
 .carousel-control-prev,
 .carousel-control-next{
-    width: 4%;
+  width: 4%;
 }
 
 #carouselExampleAutoplaying {
-    max-width: 95%; /* Set the maximum width */
-    margin: auto; /* Center the carousel horizontally */
+  max-width: 95%; /* Set the maximum width */
+  margin: auto; /* Center the carousel horizontally */
+    max-height: 95%;
 }
 
 .carousel-item img {
@@ -147,9 +162,9 @@ img{
     display: flex;
     justify-content: space-evenly;
     flex-wrap: wrap;
-    margin-top: 2%;
+    /* margin-top: 2%;
     margin-left: 2.5%;
-    margin-right: 2.5%;
+    margin-right: 2.5%; */
 }
 
 
@@ -169,11 +184,11 @@ img{
 
 .hidden{
     opacity: 0;
-    transition: all 4s;
+    transition: all 2s;
 
     filter: blur(5px);
     transform: translateX(-100%);
-    transition: all 4s;
+    transition: all 2s;
 }
 
 .show{
@@ -182,14 +197,311 @@ img{
     transform: translateX(0);
 }
 
+/* Loader Begin */
+
+.overlay{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(5px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid #FFF;
+    border-bottom-color: #FF3D00;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+    }
+
+    @keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+    } 
+    
+
+  /* Loader End */
 
 
+/* CARD STYLE */
+
+/*=============== CARD ===============*/
+.container {
+    display: flex;
+    /* place-items: center; */
+    margin-inline: 1.5rem;
+    padding-block: 4rem;
+  }
+  
+  .card__container {
+    display: flex;
+
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+  }
+  
+  .card__article {
+    margin-top: 1rem;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .card__img {
+    width: 328px;
+    height: 400px;
+  }
+
+  .card__img img{
+    height: 100%;
+    width: 100%;
+    border-radius: 1.5rem;
+  }
+  
+  .card__data {
+    width: 280px;
+    background-color: white;
+    padding: 1.5rem 2rem;
+    box-shadow: 0 8px 24px hsla(0, 0%, 0%, .15);
+    border-radius: 1rem;
+    position: absolute;
+    bottom: -9rem;
+    left: 0;
+    right: 0;
+    margin-inline: auto;
+    opacity: 0;
+    transition: opacity 1s 1s;
+  }
+  
+  .card__description {
+    display: block;
+    font-size: var(--small-font-size);
+    margin-bottom: .25rem;
+  }
+  
+  .card__title {
+    font-size: var(--h2-font-size);
+    font-weight: 500;
+    color: var(--title-color);
+    margin-bottom: .75rem;
+  }
+  
+  .card__button {
+    text-decoration: none;
+    font-size: var(--small-font-size);
+    font-weight: 500;
+    color: var(--first-color);
+  }
+  
+  .card__button:hover {
+    text-decoration: underline;
+  }
+  
+  /* Naming animations in hover */
+  .card__article:hover .card__data {
+    animation: show-data 1s forwards;
+    opacity: 1;
+    transition: opacity .3s;
+  }
+  
+  .card__article:hover {
+    animation: remove-overflow 2s forwards;
+  }
+  
+  .card__article:not(:hover) {
+    animation: show-overflow 2s forwards;
+  }
+  
+  .card__article:not(:hover) .card__data {
+    animation: remove-data 1s forwards;
+  }
+  
+  /* Card animation */
+  @keyframes show-data {
+    50% {
+      transform: translateY(-10rem);
+    }
+    100% {
+      transform: translateY(-7rem);
+    }
+  }
+  
+  @keyframes remove-overflow {
+    to {
+      overflow: initial;
+    }
+  }
+  
+  @keyframes remove-data {
+    0% {
+      transform: translateY(-7rem);
+    }
+    50% {
+      transform: translateY(-10rem);
+    }
+    100% {
+      transform: translateY(.5rem);
+    }
+  }
+  
+  @keyframes show-overflow {
+    0% {
+      overflow: initial;
+      pointer-events: none;
+    }
+    50% {
+      overflow: hidden;
+    }
+  }
+  
+  /*=============== BREAKPOINTS ===============*/
+  /* For small devices */
+  @media screen and (max-width: 340px) {
+    .container {
+      margin-inline: 1rem;
+    }
+  
+    .card__data {
+      width: 250px;
+      padding: 1rem;
+    }
+  }
+  
+  /* For medium devices */
+  @media screen and (min-width: 768px) {
+    .card__container {
+      grid-template-columns: repeat(2, 1fr);
+      column-gap: 1.5rem;
+    }
+  }
+  
+  /* For large devices */
+  /* @media screen and (min-width: 1120px) {
+    .container {
+      height: 100vh;
+    }
+  
+    .card__container {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .card__img {
+      width: 348px;
+    }
+    .card__data {
+      width: 316px;
+      padding-inline: 2.5rem;
+    }
+  } */
+
+/* CARD STYLE END */
+
+/* PRODUCT STYLE BEGIN */
 
 
+.product__card {
+  position: relative;
+  width: 328px;
+  height: 400px;
+  background: #000;
+  padding: 40px;
+}
+.product__card .product__image {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.product__card .product__image img {
+  border-radius: 1.5rem;
+  width: 100%;
+  transition: .5s;
+}
+.product__card:hover .product__image img {
+  opacity: .5;
+  transform: translateX(30%);/*100%*/
+}
+.product__card .product__details {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 70%;/*100%*/
+  height: 100%;
+  background: #000000;
+  transition: .5s;
+  transform-origin: left;
+  transform: perspective(2000px) rotateY(-90deg);
+}
+.product__card:hover .product__details {
+  transform: perspective(2000px) rotateY(0deg);
+}
+.product__card .product__details .product__center {
+  padding: 20px;
+  text-align: center;
+  background: #000000;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.product__card .product__details .product__center h1 {
+  margin: 0;
+  padding: 0;
+  color: #ffffff;
+  line-height: 20px;
+  font-size: 20px;
+  text-transform: uppercase;
+}
+.product__card .product__details .product__center h1 span {
+  font-size: 14px;
+  color: #262626;
+}
+.product__card .product__details .product__center p {
+  margin: 10px 0;
+  padding: 0;
+  color: #ffffff;
+}
+.product__card .product__details .product__center ul {
+  margin: 10px auto 0;
+  padding: 0;
+  display: table;
+}
+.product__card .product__details .product__center ul li {
+  list-style: none;
+  margin: 0 5px;
+}
+.product__card .product__details .product__center ul li a {
+  display: block;
+  background: #262626;
+  color: #fff;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  transform: .5s;
+}
+.product__card .product__details .product__center ul li button{
+  background-color: white;
+}
 
 
+.products_list{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
 
-
+/* PRODUCT STYLE END */
 
 
 

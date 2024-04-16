@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,200;0,300;0,400;0,500;0,700;0,800;1,200;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="/css/user/cart/animate.css">
+    
+    <link rel="stylesheet" href="/css/user/cart/owl.carousel.min.css">
+    <link rel="stylesheet" href="/css/user/cart/owl.theme.default.min.css">
+    <link rel="stylesheet" href="/css/user/cart/magnific-popup.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.min.css">
+    
+    <link rel="stylesheet" href="/css/user/cart/flaticon.css">
+    <link rel="stylesheet" href="/css/user/cart/style.css">
+
+    <!-- Boxicon-icons  -->
+
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <style>
+      /* Loader Begin */
+
+.overlay{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(5px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid #FFF;
+    border-bottom-color: #FF3D00;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+    }
+
+    @keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+    } 
+    
+
+  /* Loader End */
+        body{
+            background-color: black;
+        }
+
+        .table tbody td{
+
+            background-color: black;
+        }
+        .form-control{
+            background-color: black;
+            color: white;
+        }
+        .form-control:focus{
+            background-color: black !important;
+            color: white !important;
+        }
+        .checkmark:after{
+            color: rgba(199, 42, 42, 0.353);
+        }
+        .alert{
+            border: 1px solid black;
+        }
+        .close i{
+          color: red;
+        }
+        .add-sub{
+          cursor: pointer;
+          border-radius: 7px;
+          margin-top: 10px;
+          height: 30px;
+          width: 20px;
+        }
+    </style>
+  </head>
+  <body>
+
+    <div class="overlay">
+      <span class="loader"></span>
+    </div>
+
+    <header class="header">
+
+        <nav class="navbar">
+          <a href="/home">Home</a>
+          <a href="/product-list/list">Products</a>
+        </nav>
+        <div class="search-bar-container">
+			<form action="/product-list/search" method="get" class="search-bar">
+				<input type="text" placeholder="Search..." name="search" id="search">
+				<button type="submit"><box-icon name='search'><i class='bx bx-search'></i></button>
+			</form>
+        <div class="right_navbar">
+          <a href="/user/wishlist"><i class='bx bx-heart'></i></a>
+          <a href="/user/cart"><i class='bx bx-cart'></i></a>
+          <a href="/user/profile"><i class='bx bx-user'></i></a>
+          <form action="/user/logout" method="post" ><button type="submit" class="login_navbar">Logout</button></form>
+        </div>
+        </div>
+        
+    </header>
+
+    
+    <section class="hero-wrap hero-wrap-2" style="background-image: url('/images/product/bg_2.jpg');" data-stellar-background-ratio="0.5">
+      <div class="overlay"></div>
+      <div class="container">
+        <div class="row no-gutters slider-text align-items-end justify-content-center">
+          <div class="col-md-9 ftco-animate mb-5 text-center">
+            <p class="breadcrumbs mb-0"><span class="mr-2"><a href="/home">Home <i class="fa fa-chevron-right"></i></a></span> <span>Cart <i class="fa fa-chevron-right"></i></span></p>
+            <h2 class="mb-0 bread" >My Cart</h2>
+          </div>
+        </div>
+      </div>
+    </section>
+  
+      <section class="ftco-section">
+          <div class="container">
+              <div class="row">
+                  <div class="table-wrap">
+                          <table class="table">
+                            <thead class="thead-primary">
+                              <tr>
+                                  <th>&nbsp;</th>
+                                  <th>&nbsp;</th>
+                                  <th>Product</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                                <th>&nbsp;</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+
+                              <% cart.items.forEach((item)=>{ %>
+
+                                <tr class="alert" role="alert">
+                                  <td>
+                                    <label class="checkbox-wrap checkbox-primary">
+                                      <input type="checkbox">
+                                      <span class="checkmark"></span>
+                                    </label>
+                                  </td>
+                                  <td>
+                                    <div class="img" style="background-image: url('<%= item.product.image[0] %>');"></div>
+                                  </td>
+                                  <td>
+                                    <div class="email">
+                                      <span style="color: white;"><%= item.product.name %></span>
+                                      <span style="color: gray;"><%= item.product.category.name %></span>
+                                    </div>
+                                </td>
+                                <td style="color: white;"><%= item.product.price %></td>
+                                <td class="quantity">
+                                  <div class="input-group">
+                                    <button class="add-sub" onclick="changeCart(this,false,'<%= item.product._id %>','<%= item.product.price %>')">-</button>
+                                    <input type="text" name="quantity" class="quantity form-control input-number" value="<%= item.quantity %>" max="100" disabled>
+                                    <button class="add-sub" onclick="changeCart(this,true,'<%= item.product._id %>','<%= item.product.price %>')">+</button>
+                                  </div>
+                                </td>
+                                <% let price =item.product.price*item.quantity %>
+                                <td style="color: white;" class="myCell"><%= price %></td>
+                                <td>
+                                  <input type="hidden" value="<%=item.product._id %>" name="product_id">
+                                  <button type="button" class="close" onclick="deleteCart(this)">
+                                    <i class="fa fa-close"></i>
+                                  </button>
+                                </td>
+                              </tr>
+                              <% }) %>
+                            </tbody>
+                  
+                          </table>
+                      </div>
+                    </div>
+                    <div class="row justify-content-end">
+                  <div class="col col-lg-5 col-md-6 mt-5 cart-wrap ftco-animate">
+                      <div class="cart-total mb-3">
+                          <h3 style="color: white;">Cart Totals</h3>
+                          <p class="d-flex">
+                              <span>Subtotal</span>
+                              <span class="totalPrice">$<%= totalPrice %></span>
+                          </p>
+                          <p class="d-flex">
+                              <span>Delivery</span>
+                              <span>$0.00</span>
+                          </p>
+                          <p class="d-flex">
+                              <span>Discount</span>
+                              <span>$0.00</span>
+                          </p>
+                          <hr>
+                          <p class="d-flex total-price">
+                              <span>Total</span>
+                              <span style="color: white;" class="totalPrice">$<%= totalPrice %></span>
+                          </p>
+                      </div>
+                      <p class="text-center"><a href="/user/checkout" class="btn btn-primary py-3 px-4">Proceed to Checkout</a></p>
+                  </div>
+              </div>
+          </div>
+      </section>
+
+  <!-- loader -->
+  <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>   
+  <script src="/js/user/cart/jquery.min.js"></script>
+  <script src="/js/user/cart/jquery-migrate-3.0.1.min.js"></script>
+  <script src="/js/user/cart/popper.min.js"></script>
+  <script src="/js/user/cart/bootstrap.min.js"></script>
+  <script src="/js/user/cart/jquery.easing.1.3.js"></script>
+  <script src="/js/user/cart/jquery.waypoints.min.js"></script>
+  <script src="/js/user/cart/jquery.stellar.min.js"></script>
+  <script src="/js/user/cart/owl.carousel.min.js"></script>
+  <script src="/js/user/cart/jquery.magnific-popup.min.js"></script>
+  <script src="/js/user/cart/jquery.animateNumber.min.js"></script>
+  <script src="/js/user/cart/scrollax.min.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
+  <script src="/js/google-map.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+  <script src="/js/user/cart/main.js"></script>
+
+  <script>
+
+    function deleteCart(btn){
+
+      Swal.fire({
+          title: "Are you sure?",
+          text: "You won't be able to revert this!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+          if (result.isConfirmed) {
+            const product_id=btn.parentNode.querySelector("[name=product_id]").value;
+            fetch("/user/deleteCart/"+product_id,{
+              method:"DELETE"
+            })
+            .then((response)=>{
+              if(response.ok){
+                const row=btn.closest("tr")
+                row.remove();
+                return response.json();
+              }else{
+                Swal.fire({
+                  title: "Sorry",
+                  text: "Sorry For The Inconvenince.We are Currently working on a solution.",
+                  icon: "error"
+                });
+              }
+            })
+            .then((data)=>{
+              const total=document.querySelectorAll(".totalPrice");
+              total.forEach((price)=>{
+                price.textContent=data.totalPrice
+              });
+              Swal.fire({
+                title: "Removed!",
+                text: "Your product has been removed.",
+                icon: "success"
+              });
+
+            })
+            .catch((err)=>{console.log("error")})
+          }
+        })
+        .catch((err)=>{console.log("error")})
+    }
+
+    function changeCart(btn,action,id,price){
+      const loader=document.querySelector(".overlay");
+      loader.style.display="flex";
+
+      fetch("/user/updateQuantityCart/"+id,{
+              method:"PATCH",
+              headers:{
+                "Content-Type":"application/json"
+              },
+              body:JSON.stringify({action:action})
+            })
+            .then((response)=>{
+              return response.json()
+            })
+            .then((data)=>{
+              const inputQuantity=btn.closest("div").querySelector("[name=quantity]");
+              const updatedprice=btn.closest("tr").querySelector(".myCell");
+              if(data.outOfStock){
+                loader.style.display="none";
+                return Swal.fire({
+                  title: "Stock Limit Reached",
+                  text: "Cannot Add More Product",
+                  icon: "error"
+                });
+              }else if(data.negative){
+                loader.style.display="none";
+                return Swal.fire({
+                  title: "Error!",
+                  text: "Product cannot go negative",
+                  icon: "error"
+                });
+              }
+              else if(action){
+                inputQuantity.value=+inputQuantity.value+1
+                updatedprice.textContent=+updatedprice.textContent+(+price)
+              }else{
+                inputQuantity.value=+inputQuantity.value-1
+                updatedprice.textContent=+updatedprice.textContent-(+price)
+              }
+              const total=document.querySelectorAll(".totalPrice");
+              total.forEach((price)=>{
+                price.textContent=data.totalPrice
+              })
+              loader.style.display="none";
+            })
+            .catch((err)=>{
+              console.log("Something Happened")
+              loader.style.display="none";
+            })
+    }
+  </script>
+    
+  </body>
+</html>

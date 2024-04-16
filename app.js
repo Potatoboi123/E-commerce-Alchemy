@@ -6,11 +6,16 @@ const session=require("express-session")
 const bodyParser=require("body-parser")
 require("dotenv").config(); 
 const flash=require("connect-flash")
+const passport=require("passport")
+/* const multer=require("multer") */
+
 const nocache=require("nocache")
+/* const morgan = require('morgan'); */
 
 const userRoutes=require("./routes/user.js")
 const adminRoutes=require("./routes/admin.js")
 const productRoutes=require("./routes/product.js")
+const passportSetup=require("./config/passport-setup.js")
 
 const app=express();
 
@@ -19,12 +24,15 @@ const PORT=process.env.PORT||8080
 
 app.set("view engine","ejs")
 
+/* app.use(multer().single("image")) */
 app.use(bodyParser.urlencoded({extended:true}))
 app.use(express.json())
 
 app.use(express.static(path.join(__dirname,"public")))
+app.use("/uploads",express.static(path.join(__dirname,"uploads")))
 
 app.use(nocache())
+/* app.use(morgan('combined')); */
 
 app.use(session({
     secret:"secret key",
@@ -32,7 +40,10 @@ app.use(session({
     saveUninitialized:false
 }))
 
-app.use(flash())
+app.use(flash());
+
+app.use(passport.initialize())
+app.use(passport.session())
 
 app.use("/user",userRoutes);
 app.use("/admin",adminRoutes);

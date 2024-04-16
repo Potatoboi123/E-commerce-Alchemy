@@ -15,26 +15,25 @@ const userSchema=new Schema({
         unique:true
     },
     password:{
-        type:String,
-        required:true
+        type:String
     },
     phoneNo:{
         type:String
     },
     isBlocked:{
         type:Boolean,
+        default:false,
         required:true
     },
     referralCode:{
         type:String
     },
-    cart:{
-        type: Schema.Types.ObjectId,
-        ref:"Cart"
+    googleId:{
+        type:String
     },
-    wishlist:{
-        type: Schema.Types.ObjectId,
-        ref:"wishlist"
+    createdAt:{
+        type:Date,
+        default:Date.now
     }
 });
 
@@ -47,7 +46,9 @@ userSchema.statics.signup=async function (signup_name,signup_email,signup_passwo
         email:signup_email,
         password:hashedPassword,
         isBlocked:false,
-        referralCode:signup_referral
+        referralCode:signup_referral,
+        cart:[],
+        wishlist:[]
     })
     return user
 }
