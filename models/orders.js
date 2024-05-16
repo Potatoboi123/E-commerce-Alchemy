@@ -9,23 +9,31 @@ const orderSchema = mongoose.Schema({
         },
     userId: {
          type: Schema.Types.ObjectId,
-         required:true
+         required:true,
+         ref:"User"
          },
     items: [{
-        productId: { type: mongoose.Schema.Types.ObjectId},
+        productId: { type: Schema.Types.ObjectId},
         productName: { type: String},
+        categoryId:{ type: Schema.Types.ObjectId},
+        categoryName:{type:String},
         productDescription: { type: String,},
         productRating: { type: Number,default:0},
+        brand:{type:String},
         stock: { type: Number,},
         productImage: { type: [String]},
         quantity: { type: Number,min: 1 },
         price: { type: Number,min: 0 },
-        status: { type: String,default:"Pending"},
+        status: { type: String,default:"pending"},
         reason: { type: String,default: "" },
         discountPrice: { type: Number, default: 0 },
         couponCode: { type: String },
         refferalCode: { type: String }
     }],
+    coupon:{
+        couponCode: {type:String},
+        discount:{type:Number}
+    },
     totalQuantity: { type: Number,min: 1 },
     totalPrice: { type: Number,min: 0 },
     address: {
@@ -82,6 +90,6 @@ orderSchema.pre('save', function(next) {
     next();
 });
 
-const ordersCollection = mongoose.model('orders', orderSchema);
+const ordersCollection = mongoose.model('Orders', orderSchema);
 
 module.exports = ordersCollection;

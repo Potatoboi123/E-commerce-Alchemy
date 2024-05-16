@@ -2,29 +2,31 @@ const User=require("../models/user.js")
 
 exports.isUser=async (req,res,next)=>{
     
-    /* if(req.session.user){
+    if(req.session.user){
         const user=await User.findById(req.session.user)
         if(user.isBlocked){
             delete req.session.user
-            res.redirect("/")
+            res.redirect("/user/login")
         }else{
+            res.locals.userName = user.name;
             next();
         }
         
         }
     else{
-            res.redirect("/")
-    } */
+            res.locals.userName=null;
+            res.redirect("/user/login")
+    }
 
-        next()
+        /* next() */
     }
 exports.isAdmin=(req,res,next)=>{
-    /* if(req.session.admin){
+    if(req.session.admin){
         next();
         }
         else{
             res.redirect("/admin")
-        } */
+        }
 
-        next();
+        /* next(); */
     }

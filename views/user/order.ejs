@@ -17,7 +17,34 @@
 
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 
-    
+    <style>
+          .mainheading{
+        background-image: url('/images/user/profile-background.jpg');
+        background-size: cover;
+        background-position: center;
+        margin-bottom: 2rem;
+      }
+      .padding{
+        height: 1rem;
+      }
+      .bx.bx-chevron-right.toggle {
+      display: none;
+      }
+      @media screen and (max-width: 600px) {
+        .bx.bx-chevron-right.toggle {
+        display: block;
+        }
+      }
+      input:-webkit-autofill,
+      input:-webkit-autofill:hover, 
+      input:-webkit-autofill:focus, 
+      input:-webkit-autofill:active{
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: #ffffff;
+          transition: background-color 5000s ease-in-out 0s;
+          box-shadow: inset 0 0 20px 20px #23232329;
+      }
+    </style>
     
 </head>
 <body>
@@ -26,7 +53,7 @@
     <header class="header">
 
         <div class="navbar">
-          <a href="/home">Home</a>
+          <a href="/">Home</a>
           <a href="/product-list/list">Products</a>
         </div>
         <div class="search-bar-container">
@@ -46,7 +73,7 @@
 
 
 
-  <nav class="sidebar close">
+  <nav class="sidebar">
     <header>
       <div class="image-text">
         <span class="image">
@@ -54,8 +81,8 @@
         </span>
 
         <div class="text logo-text">
-          <span class="name">[Name of Website]</span>
-          <span class="profession">Web developer</span>
+          <span class="name">Alchemy</span>
+          <span class="profession"><%= userName %></span>
         </div>
       </div>
 
@@ -88,7 +115,7 @@
           </li>
 
           <li class="nav-link">
-            <a href="/user/order">
+            <a href="/user/order" style="background-color: #183D3D;">
               <i class='bx bx-shopping-bag icon'></i>
               <span class="text nav-text">My orders</span>
             </a>
@@ -107,6 +134,14 @@
               <span class="text nav-text">Coupon</span>
             </a>
           </li>
+
+          <li class="nav-link">
+            <a href="/user/chat">
+              <i class='bx bxs-chat icon'></i>
+              <span class="text nav-text">Chat</span>
+            </a>
+          </li>
+          
         </ul>
       </div>
       
@@ -116,36 +151,55 @@
   </nav>
 
   <section class="home">
-    <div class="text">Order Details</div>
-    <% orders.forEach((order)=>{ %>
+    <div class="container mainheading" >
+      <div class="padding"></div>
+      <div class="d-flex justify-content-center py-5 pb-0"><a href="/">Home</a>/Orders</div>
+      <div class="text d-flex justify-content-center pb-5"> <h2 style="color: rgb(0, 0, 0);">Manage Orders</h2></div>
+    </div>
 
-        <div class="container px-4 py-5" id="hanging-icons">
-            <h2 class="pb-2 border-bottom" style="color: white;">OrderId:<%= order.orderId %></h2>
-            <a href="/user/orderDetails/<%= order._id %>" class="btn btn-primary">Show Order Details</a>
-            <div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
-                <% order.items.forEach((item)=>{ %>
-
-                    <div class="col d-flex align-items-start">
-                      <div class="icon-square text-body-emphasis bg-body-secondary d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
-                       <img src="<%= item.productImage[0] %>" alt="productimage" class="bi" style="width: 6rem; height: 6rem;">
-                      </div>
-                      <div>
-                        <h3 class="fs-2 text-body-emphasis" style="color: white !important;"><%= item.productName %></h3>
-                        <p>$<%= item.price %></p>
-                        <p>status: <%= item.status %></p>
-                        
-                      </div>
-                    </div>
-
-                <% }) %>
-
-              
-            </div>
-          </div>
-
-    <% }) %>
-    
-  
+    <div class="container">
+      <% if(orders.length==0) {%>
+        <h2 style="text-align: center; color: white;">No Orders</h2>
+      <% }else{ %>
+      <div class="table-responsive">
+          <table class="table table-dark">
+              <thead>
+                  <tr>
+                      <th>Order ID</th>
+                      <th>Image</th>
+                      <th>Product</th>
+                      <th>Price</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <% orders.forEach((order) => { %>
+                      <tr>
+                          <td rowspan="<%= order.items.length %>"><%= order.orderId %></td>
+                          <% order.items.forEach((item, index) => { %>
+                              <% if (index > 0) { %>
+                                  </tr><tr>
+                              <% } %>
+                              <td><img src="<%= item.productImage[0] %>" alt="productimage" style="width: 6rem; height: 6rem;"></td>
+                              <td><%= item.productName %></td>
+                              <% if(order.coupon.discount){ %>
+                              <td>$<%= ((item.discountPrice*item.quantity)*(1-order.coupon.discount/100)).toFixed(2) %></td>
+                              <% }else{%>
+                                <td>$<%= (item.discountPrice*item.quantity).toFixed(2) %></td>
+                                <% } %>
+                              <td><%= item.status %></td>
+                              <% if (index === 0) { %>
+                                <td rowspan="<%= order.items.length %>"><a href="/user/orderDetails/<%= order._id %>" class="btn btn-primary">Show Order Details</a></td>
+                            <% } %>
+                              <% }) %>
+                      </tr>
+                  <% }) %>
+              </tbody>
+          </table>
+      </div>
+      <%} %>
+  </div>
 
   </section>
 

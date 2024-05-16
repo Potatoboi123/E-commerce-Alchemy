@@ -12,9 +12,16 @@ const productSchema=new Schema({
         required:true,
         min:0
     },
+    discountPrice:{
+        type:Number
+    },
     description:{
         type: String,
         required: true
+    },
+    brand:{
+        type:String,
+        required:true
     },
     stock:{
         type:Number,

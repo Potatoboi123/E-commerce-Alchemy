@@ -19,6 +19,10 @@ const categorySchema=new Schema({
     createdAt:{
         type:Date,
         default:Date.now
+    },
+    categoryOffer:{
+        type:Number,
+        default:0
     }
 });
 

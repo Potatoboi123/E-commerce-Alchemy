@@ -163,7 +163,7 @@ body{
     position: absolute;
     top: 0;
     right: 0;
-    width: calc(100% - 58%);
+    width: calc(100% - 55%);
     height: 100%;
     overflow: hidden;
 }

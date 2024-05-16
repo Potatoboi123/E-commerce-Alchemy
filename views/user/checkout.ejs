@@ -49,7 +49,9 @@
     box-sizing: border-box;
     animation: rotation 1s linear infinite;
     }
-
+.list-group-item{
+ background-color:  #212529;
+}
     @keyframes rotation {
     0% {
         transform: rotate(0deg);
@@ -93,6 +95,15 @@
           height: 30px;
           width: 20px;
         }
+        input:-webkit-autofill,
+      input:-webkit-autofill:hover, 
+      input:-webkit-autofill:focus, 
+      input:-webkit-autofill:active{
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: #ffffff;
+          transition: background-color 5000s ease-in-out 0s;
+          box-shadow: inset 0 0 20px 20px #23232329;
+      }
         /*  */
         .modal-content{
         color: white;
@@ -122,33 +133,14 @@
       <span class="loader"></span>
     </div>
 
-    <header class="header">
-
-        <nav class="navbar">
-          <a href="/home">Home</a>
-          <a href="/product-list/list">Products</a>
-        </nav>
-        <div class="search-bar-container">
-			<form action="/product-list/search" method="get" class="search-bar">
-				<input type="text" placeholder="Search..." name="search" id="search">
-				<button type="submit"><box-icon name='search'><i class='bx bx-search'></i></button>
-			</form>
-        <div class="right_navbar">
-          <a href="/user/wishlist"><i class='bx bx-heart'></i></a>
-          <a href="/user/cart"><i class='bx bx-cart'></i></a>
-          <a href="/user/profile"><i class='bx bx-user'></i></a>
-          <form action="/user/logout" method="post" ><button type="submit" class="login_navbar">Logout</button></form>
-        </div>
-        </div>
-        
-    </header>
+    <%- include('../includes/navbarshop.ejs') %>
 
     <section class="hero-wrap hero-wrap-2" style="background-image: url('/images/product/bg_2.jpg');" data-stellar-background-ratio="0.5">
         <div class="overlay"></div>
         <div class="container">
           <div class="row no-gutters slider-text align-items-end justify-content-center">
             <div class="col-md-9 ftco-animate mb-5 text-center">
-                <p class="breadcrumbs mb-0"><span class="mr-2"><a href="/home">Home <i class="fa fa-chevron-right"></i></a></span> <span>Checkout <i class="fa fa-chevron-right"></i></span></p>
+                <p class="breadcrumbs mb-0"><span class="mr-2"><a href="/">Home <i class="fa fa-chevron-right"></i></a></span> <span>Checkout <i class="fa fa-chevron-right"></i></span></p>
               <h2 class="mb-0 bread" >Checkout</h2>
             </div>
           </div>
@@ -156,42 +148,64 @@
       </section>
   
       
-  <div class="container" style="margin-top: 3rem;">
+  <div class="container" style="margin-top: 4rem;margin-bottom: 4rem;">
     <main>
   
       <div class="row g-5">
         <div class="col-md-5 col-lg-4 order-md-last">
           <h4 class="d-flex justify-content-between align-items-center mb-3">
             <span class="text-primary">Your cart</span>
-            <span class="badge bg-primary rounded-pill"><%= cart.items.length %></span>
+            <span class="badge bg-primary rounded-pill"><% if(action){ %> 1 <%}else{ %> <%= cart.items.length %> <%} %></span>
           </h4>
           <ul class="list-group mb-3">
-            <% cart.items.forEach((item)=>{ %>
+            <% if(action){ %>
 
               <li class="list-group-item d-flex justify-content-between lh-sm">
                 <div>
-                  <h6 class="my-0"><%= item.product.name %></h6>
-                  <small class="text-body-secondary"><%= item.product.category.name %></small>
+                  <h6 class="my-0"><%= cart.product.name %></h6>
+                  <small class="text-body-secondary"><%= cart.product.category.name %></small>
                 </div>
-                <span class="text-body-secondary">$<%= item.product.price %></span>
+                <span class="text-body-secondary">₹<%= cart.product.discountPrice %></span>
               </li>
-            <% }) %>
-            <li class="list-group-item d-flex justify-content-between bg-body-tertiary">
+
+            <% }else{ %>
+
+              <% cart.items.forEach((item)=>{ %>
+  
+                <li class="list-group-item d-flex justify-content-between lh-sm">
+                  <div>
+                    <h6 class="my-0"><%= item.product.name %></h6>
+                    <small class="text-body-secondary"><%= item.product.category.name %></small>
+                  </div>
+                  <span class="text-body-secondary">₹<%= item.product.discountPrice %></span>
+                </li>
+              <% }) %>
+
+            <% } %>
+
+            <li class="list-group-item d-flex justify-content-between bg-body-tertiary display-couponcode">
               <div class="text-success">
-                <h6 class="my-0">Promo code</h6>
+                <h6 class="my-0"><a href="/user/coupon">Add Coupon</a></h6>
+                <button type="button" class="remove-coupon" style="display: none;" onclick="removeCoupon(this,`<%= cart.totalPrice %>`)">Remove Coupon</button>
+              </div>
+              <span class="text-success coupon-discount">-₹0</span>
+            </li>
+            <!-- <li class="list-group-item d-flex justify-content-between bg-body-tertiary">
+              <div class="text-success">
+                <h6 class="my-0">Add Coupon</h6>
                 <small>EXAMPLECODE</small>
               </div>
-              <span class="text-success">-$5</span>
-            </li>
+              <span class="text-success">-₹5</span>
+            </li> -->
             <li class="list-group-item d-flex justify-content-between">
               <span>Total (USD)</span>
-              <strong>$<%= cart.totalPrice %></strong>
+              <strong class="totalPrice">₹<%= cart.totalPrice %></strong>
             </li>
           </ul>
   
-          <form class="card p-2">
+          <form class="card p-2" onsubmit="checkCouponCode(event)">
             <div class="input-group">
-              <input type="text" class="form-control" placeholder="Promo code">
+              <input type="text" class="form-control" name="checkCoupon" placeholder="Coupon code">
               <button type="submit" class="btn btn-secondary">Redeem</button>
             </div>
           </form>
@@ -199,7 +213,7 @@
 
         
         <div class="col-md-7 col-lg-8">
-          <form class="needs-validation" onsubmit="checkout(event)" novalidate>
+          <form class="needs-validation" onsubmit="checkout(event,'<%= action %>')" novalidate>
          <!-- 00 -->
          <h4 class="mb-3" style="color: white;">Select Address</h4>
          <div class="form-group">
@@ -218,12 +232,8 @@
 
         <div class="my-3">
           <div class="form-check">
-            <input id="credit" name="paymentMethod" type="radio" class="form-check-input" value="credit" checked required>
-            <label class="form-check-label" for="credit">Credit card</label>
-          </div>
-          <div class="form-check">
-            <input id="debit" name="paymentMethod" type="radio" class="form-check-input" value="debit" required>
-            <label class="form-check-label" for="debit">Debit card</label>
+            <input id="razorpay" name="paymentMethod" type="radio" class="form-check-input" value="razorpay" checked required>
+            <label class="form-check-label" for="razorpay">Razor Pay</label>
           </div>
           <div class="form-check">
             <input id="paypal" name="paymentMethod" type="radio" class="form-check-input" value="paypal" required>
@@ -234,7 +244,7 @@
             <label class="form-check-label" for="paypal">Cash On Delivery</label>
           </div>
         </div>
-
+        <input type="hidden" value="" name="couponCode">
         <button class="w-100 btn btn-primary btn-lg" type="submit">Order Now</button>
        </form>
       </div>
@@ -248,78 +258,155 @@
 
     <!-- ADD ADDRESS BOOTSTRAP MODAL BEGIN -->
  
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Add Address</h5>
-      </div>
-      <div class="modal-body">
-        <form onsubmit="addAddress(event)">
-          <div class="form-group">
-            <label for="name" class="col-form-label">Name:</label>
-            <input type="text" class="form-control" id="name" name="name" placeholder="Name" required="true">
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Add Address</h5>
           </div>
-          <div class="form-group">
-            <label for="phoneNo" class="col-form-label">Phone:</label>
-            <input type="number" class="form-control" id="phoneNo" name="phoneNo" placeholder="10-digit mobile number" required="true">
+          <div class="modal-body">
+            <form onsubmit="addAddress(event)">
+              <div class="form-group">
+                <label for="name" class="col-form-label">Name:</label>
+                <input type="text" class="form-control" id="name" name="name" placeholder="Name" required>
+                <small class="text-danger" id="name-error"></small>
+              </div>
+              <div class="form-group">
+                <label for="phoneNo" class="col-form-label">Phone:</label>
+                <input type="text" class="form-control" id="phoneNo" name="phoneNo" placeholder="10-digit mobile number" required>
+                <small class="text-danger" id="phoneNo-error"></small>
+              </div>
+              <div class="form-group">
+                <label for="pincode" class="col-form-label">Pincode:</label>
+                <input type="text" class="form-control" id="pincode" name="pincode" placeholder="Pincode" required>
+                <small class="text-danger" id="pincode-error"></small>
+              </div>
+              <div class="form-group">
+                <label for="locality" class="col-form-label">Locality:</label>
+                <input type="text" class="form-control" id="locality" name="locality" placeholder="Locality" required>
+                <small class="text-danger" id="locality-error"></small>
+              </div>
+              <div class="form-group">
+                <label for="address" class="col-form-label">Address:</label>
+                <textarea class="form-control" id="address" name="address" placeholder="Address(Area and Street)" required></textarea>
+                <small class="text-danger" id="address-error"></small>
+              </div>
+              <div class="form-group">
+                <label for="city" class="col-form-label">City/District/Town:</label>
+                <input type="text" class="form-control" id="city" name="city" placeholder="City/District/Town" required>
+                <small class="text-danger" id="city-error"></small>
+              </div>
+              <div class="form-group">
+                <label for="state" class="col-form-label">State:</label>
+                <input type="text" class="form-control" id="state" name="state" placeholder="State" required>
+                <small class="text-danger" id="state-error"></small>
+              </div>
+              <div class="form-group">
+                <label for="landmark" class="col-form-label">Landmark:</label>
+                <input type="text" class="form-control" id="landmark" name="landmark" placeholder="Landmark(Optional)">
+                <small class="text-danger" id="landmark-error"></small>
+              </div>
+              <div class="form-group">
+                <label for="alternateNo" class="col-form-label">Alternate Phone no:</label>
+                <input type="text" class="form-control" id="alternateNo" name="alternateNo" placeholder="Alternate Phone No(Optional)">
+                <small class="text-danger" id="alternateNo-error"></small>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </div>
+            </form>
           </div>
-          <div class="form-group">
-            <label for="pincode" class="col-form-label">Pincode:</label>
-            <input type="number" class="form-control" id="pincode" name="pincode" placeholder="Pincode" required="true">
-          </div>
-          <div class="form-group">
-            <label for="locality" class="col-form-label">Locality:</label>
-            <input type="text" class="form-control" id="locality" name="locality" placeholder="Locality" required="true">
-          </div>
-          <div class="form-group">
-            <label for="address" class="col-form-label">Address:</label>
-            <textarea class="form-control" id="address" name="address" placeholder="Address(Area and Street)" required="true"></textarea>
-          </div>
-          <div class="form-group">
-            <label for="city" class="col-form-label">City/District/Town:</label>
-            <input type="text" class="form-control" id="city" name="city" placeholder="City/District/Town" required="true">
-          </div>
-          <div class="form-group">
-            <label for="state" class="col-form-label">State:</label>
-            <input type="text" class="form-control" id="state" name="state" placeholder="State" required="true">
-          </div>
-          <div class="form-group">
-            <label for="landmark" class="col-form-label">Landmark:</label>
-            <input type="text" class="form-control" id="landmark" name="landmark" placeholder="Landmark(Optional)">
-          </div>
-          <div class="form-group">
-            <label for="alternateNo" class="col-form-label">Alternate Phone no:</label>
-            <input type="number" class="form-control" id="alternateNo" name="alternateNo" placeholder="Alternate Phone No(Optional)">
-          </div>
-
-          <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-primary">Submit</button>
         </div>
-
-        </form>
       </div>
-      
     </div>
-  </div>
-</div>
-  <!-- ADD ADDRESS BOOTSTRAP MODAL END -->
-  <script>
+<!-- ADD ADDRESS BOOTSTRAP MODAL END -->
+
+    <!-- loader -->
+    <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
+    <!-- Razorpay -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <!-- Sweet alert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>   
+
+    <script src="/js/user/cart/jquery.min.js"></script>
+    <script src="/js/user/cart/jquery-migrate-3.0.1.min.js"></script>
+    <script src="/js/user/cart/popper.min.js"></script>
+    <script src="/js/user/cart/bootstrap.min.js"></script>
+    <script src="/js/user/cart/jquery.easing.1.3.js"></script>
+    <script src="/js/user/cart/jquery.waypoints.min.js"></script>
+    <script src="/js/user/cart/jquery.stellar.min.js"></script>
+    <script src="/js/user/cart/owl.carousel.min.js"></script>
+    <script src="/js/user/cart/jquery.magnific-popup.min.js"></script>
+    <script src="/js/user/cart/jquery.animateNumber.min.js"></script>
+    <script src="/js/user/cart/scrollax.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+    <script src="/js/user/cart/main.js"></script>
+<script>
+    const loader=document.querySelector(".overlay");
     /* ADD Address BEGIN */
     function addAddress(event){
+
       event.preventDefault()
       const form_data=new FormData(event.target)
       let json_form={};
       form_data.forEach((value,key)=>{
         json_form[key]=value;
       })
-      /* 
+      /* Validation BEGIN */
 
-      Validation Goes Here
+      document.querySelectorAll('.text-danger').forEach(errorElement => {
+      errorElement.textContent = '';
+    });
 
-       */
-      fetch("/user/add_address",{
+    let isValid = true;
+
+    if (!json_form.name) {
+    document.getElementById('name-error').textContent = 'Name is required.';
+    isValid = false;
+  }
+
+  if (!json_form.phoneNo) {
+    document.getElementById('phoneNo-error').textContent = 'Phone number is required.';
+    isValid = false;
+  } else if (json_form.phoneNo.length !== 10 || isNaN(json_form.phoneNo)) {
+    document.getElementById('phoneNo-error').textContent = 'Phone number must be a 10-digit number.';
+    isValid = false;
+  }
+
+  if (!json_form.pincode) {
+    document.getElementById('pincode-error').textContent = 'Pincode is required.';
+    isValid = false;
+  } else if (json_form.pincode.length !== 6 || isNaN(json_form.pincode)) {
+    document.getElementById('pincode-error').textContent = 'Enter Valid Pincode';
+    isValid = false;
+  }
+
+  if (!json_form.locality) {
+    document.getElementById('locality-error').textContent = 'Locality is required.';
+    isValid = false;
+  }
+
+  if (!json_form.address) {
+    document.getElementById('address-error').textContent = 'Address is required.';
+    isValid = false;
+  }
+
+  if (!json_form.city) {
+    document.getElementById('city-error').textContent = 'City/District/Town is required.';
+    isValid = false;
+  }
+
+  if (!json_form.state) {
+    document.getElementById('state-error').textContent = 'State is required.';
+    isValid = false;
+  }
+
+    if (!isValid) {
+      return;
+    }
+      /* Validation END */
+     fetch("/user/add_address",{
         method:"POST",
         headers:{
           "Content-Type":"application/json"
@@ -334,7 +421,6 @@
         }
       })
       .then((data)=>{
-        console.log(data.message)
         Swal.fire(data.message);
       })
       .catch((err)=>{
@@ -343,79 +429,223 @@
     }
 
     /* ADD Address END */
+
+    /* Check Coupon BEGIN */
+
+    function checkCouponCode(event){
+
+      event.preventDefault();
+
+      loader.style.display="flex"
+      let totalPrice=parseFloat(document.querySelector('.totalPrice').innerText.slice(1));
+      const coupon=document.querySelector('[name=checkCoupon]').value;
+      fetch(`/user/checkCoupon?couponCode=${coupon}&totalPrice=${totalPrice}`,{
+        method:"GET"
+      })
+      .then((response)=>response.json())
+      .then((data)=>{
+        console.log(data)
+        if(data.couponCode){
+          document.querySelector('[name=couponCode]').value=data.couponCode;
+          document.querySelector('.remove-coupon').style.display="block";
+          document.querySelector('.totalPrice').innerText=`₹${(totalPrice-(totalPrice*(data.discount/100))).toFixed(2)}`;
+
+          const list=document.querySelector(".display-couponcode")
+          list.getElementsByTagName('h6')[0].innerText=data.couponCode;
+          list.querySelector('.coupon-discount').innerText=data.discount+"%";
+
+          loader.style.display="none"
+          Swal.fire("Coupon Added Successfully");
+        }else if(data.notFound){
+          Swal.fire({
+            icon: 'error',
+            title: '404',
+            text: 'Enter a Valid Coupon'
+          });
+        }
+      })
+      .catch((err)=>console.log(err.message))
+      loader.style.display="none"
+    }
+
+    /* Check Coupon END */
+
+    /* Remove Coupon BEGIN*/
+
+    function removeCoupon(btn,totalPrice){
+      loader.style.display="flex";
+      document.querySelector('[name=couponCode]').value="";
+      btn.style.display="none";
+      document.querySelector('.totalPrice').innerText=`₹${totalPrice}`;
+
+      const list=document.querySelector(".display-couponcode")
+      list.getElementsByTagName('h6')[0].innerText="";
+      const newAnchor=document.createElement("a");
+      newAnchor.innerText="Add Coupon";
+      newAnchor.href = "/user/coupon";
+      list.getElementsByTagName('h6')[0].append(newAnchor);
+      list.querySelector('.coupon-discount').innerText="-0₹";
+      loader.style.display="none";
+    }
+    /* Remove Coupon END*/
+
     /* Checkout BEGIN */
-    function checkout(event){
+    function checkout(event,action){
       event.preventDefault()
       const form_data=new FormData(event.target)
       let json_form={};
       form_data.forEach((value,key)=>{
         json_form[key]=value;
       })
-      /* 
+      /* Validation BEGIN */
+      
+      if(!json_form.address)
+      return Swal.fire("Add address")
 
-      Validation Goes Here
+      /* Validation END */
+      
+      let orderId;
+      if(json_form.paymentMethod==="paypal"){
+        return window.location.href = `/user/paypal?action=${action}&address=${json_form.address}&coupon=${json_form.couponCode}`;
+      }else if(json_form.paymentMethod==="razorpay"){
+        fetch("/user/razorpay-createOrder",{
+          method:"POST",
+          headers:{
+            "Content-Type":"application/json"
+          },
+          body:JSON.stringify({
+            json_form,
+            action
+        })
+      })
+      .then((response)=>response.json())
+      .then(data=>{
+        var options = {
+          "key": "rzp_test_zuuyQNQOwzCbtw", // Enter the Key ID generated from the Dashboard
+          "amount": data.orderprice, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+          "currency": "INR",
+          "name": "Alchemy",
+          "description": "Online Payment",
+          "order_id": data.orderId, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+          "handler": function (response){
 
-       */
-      fetch("/user/checkout",{
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json"
-        },
-        body:JSON.stringify(json_form)
+              fetch("/user/razorpay-success",{
+                method:"POST",
+                headers:{
+                  "Content-Type":"application/json"
+                },
+                body:JSON.stringify({
+                  json_form,
+                  action
+              })
+              })
+              .then((response)=>{
+            return response.json();
+          
+        })
+        .then((data)=>{
+          if(data.error){
+            return Swal.fire(data.error);
+          }
+          Swal.fire({
+              title: 'Order Placed',
+              text: 'Your Order has been placed.',
+              icon: 'success',
+              showCancelButton: true,
+              cancelButtonText: 'Continue Browsing',
+              showConfirmButton: true,
+              confirmButtonText: 'Go To Your Order',
+              allowOutsideClick: false
+              }).then((result) => {
+                  if (result.isConfirmed) {
+                      window.location.href = '/user/orderDetails/'+data.id;
+                  }else{
+                    window.location.href = '/product-list/list';
+                  }
+              });
+        })
+        .catch((err)=>{
+          Swal.fire("Some Error Occured.");
+        })
+          }
+      };
+
+      var rzp1 = new Razorpay(options);
+
+      rzp1.on('payment.failed', function (response){
+
+        fetch("/user/razorpay-failure",{
+          method:"POST",
+          headers:{
+            "Content-Type":"application/json"
+          },
+          body:JSON.stringify({
+            json_form,
+            action
+        })
       })
       .then((response)=>{
+        if(response.ok){
           return response.json();
-        
-      })
-      .then((data)=>{
-        if(data.error){
-          return Swal.fire(data.error);
+        }else{
+          throw new Error("Something Happened")
         }
-        Swal.fire({
-            title: 'Order Placed',
-            text: 'Your Order has been placed.',
-            icon: 'success',
-            showCancelButton: true,
-            cancelButtonText: 'Continue Browsing',
-            showConfirmButton: true,
-            confirmButtonText: 'Go To Your Order',
-            allowOutsideClick: false
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = '/user/order';
-                }else{
-                  window.location.href = '/product-list/list';
-                }
-            });
       })
-      .catch((err)=>{
-        Swal.fire("Some Error Occured.");
+      .then((data)=>window.location.href=`/user/orderDetails/${data.id}`)
+      .catch((err)=>console.log(err.message))
+
+      });
+
+      rzp1.open();
       })
+      }else{
+
+        fetch("/user/checkout",{
+          method:"POST",
+          headers:{
+            "Content-Type":"application/json"
+          },
+          body:JSON.stringify({
+            json_form,
+            action
+        })
+        })
+        .then((response)=>{
+            return response.json();
+          
+        })
+        .then((data)=>{
+          if(data.error){
+            return Swal.fire(data.error);
+          }
+          Swal.fire({
+              title: 'Order Placed',
+              text: 'Your Order has been placed.',
+              icon: 'success',
+              showCancelButton: true,
+              cancelButtonText: 'Continue Browsing',
+              showConfirmButton: true,
+              confirmButtonText: 'Go To Your Order',
+              allowOutsideClick: false
+              }).then((result) => {
+                  if (result.isConfirmed) {
+                      window.location.href = '/user/orderDetails/'+data.id;
+                  }else{
+                    window.location.href = '/product-list/list';
+                  }
+              });
+        })
+        .catch((err)=>{
+          Swal.fire("Some Error Occured.");
+        })
+
+      }
     }
-    /* heckout END */
+    /* Checkout END */
   </script>
   
 
 
-  <!-- loader -->
-  <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
-
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>   
-  <script src="/js/user/cart/jquery.min.js"></script>
-  <script src="/js/user/cart/jquery-migrate-3.0.1.min.js"></script>
-  <script src="/js/user/cart/popper.min.js"></script>
-  <script src="/js/user/cart/bootstrap.min.js"></script>
-  <script src="/js/user/cart/jquery.easing.1.3.js"></script>
-  <script src="/js/user/cart/jquery.waypoints.min.js"></script>
-  <script src="/js/user/cart/jquery.stellar.min.js"></script>
-  <script src="/js/user/cart/owl.carousel.min.js"></script>
-  <script src="/js/user/cart/jquery.magnific-popup.min.js"></script>
-  <script src="/js/user/cart/jquery.animateNumber.min.js"></script>
-  <script src="/js/user/cart/scrollax.min.js"></script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
-  <script src="/js/google-map.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
-  <script src="/js/user/cart/main.js"></script>
 
     
   </body>

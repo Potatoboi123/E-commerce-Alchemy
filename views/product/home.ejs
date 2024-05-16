@@ -12,6 +12,7 @@
     <!-- Stylesheet -->
 
     <link rel="stylesheet" href="css/product/landingPage.css">
+    <link rel="stylesheet" href="css/product/footer.css">
 
     <!-- Boxicon-icons  -->
 
@@ -67,8 +68,24 @@
         font-size: 1.3rem;
         font-family: "Georgia", serif;
       }
-
-
+      a{
+      text-decoration: none;
+      }
+      .bx .bx-heart {
+      color: rgb(206, 19, 19); /* Change color to red */
+      }
+      .bx .bxs-heart {
+      color: rgb(206, 19, 19); /* Change color to red */
+      }
+      input:-webkit-autofill,
+      input:-webkit-autofill:hover, 
+      input:-webkit-autofill:focus, 
+      input:-webkit-autofill:active{
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: #ffffff;
+          transition: background-color 5000s ease-in-out 0s;
+          box-shadow: inset 0 0 20px 20px #23232329;
+      }
     </style>
 </head>
 <body>
@@ -80,26 +97,7 @@
     <!-- <div class="background-1">
 
     </div> -->
-    <header class="header">
-
-      <nav class="navbar">
-        <a href="/home">Home</a>
-        <a href="/product-list/list">Products</a>
-      </nav>
-      <div class="search-bar-container">
-        <form action="/product-list/search" method="get" class="search-bar">
-          <input type="text" placeholder="Search..." name="search" id="search">
-          <button type="submit"><box-icon name='search'><i class='bx bx-search'></i></button>
-        </form>
-      <div class="right_navbar">
-        <a href="/user/wishlist"><i class='bx bx-heart'></i></a>
-        <a href="/user/cart"><i class='bx bx-cart'></i></a>
-        <a href="/user/profile"><i class='bx bx-user'></i></a>
-        <form action="/user/logout" method="post"><button type="submit" class="login_navbar">Logout</button></form>
-      </div>
-      </div>
-      
-  </header>
+    <%- include("../includes/navbarshop.ejs") %>
 
   <video autoplay muted loop id="myVideo">
     <source src="/video/jackDaniels.mp4" type="video/mp4">
@@ -128,7 +126,7 @@
               <div class="card__data">
                   <!-- <span class="card__description">Vancouver Mountains, Canada</span> -->
                   <h2 class="card__title"><%= category.name %></h2>
-                  <a href="#" class="card__button">Shop Now</a>
+                  <a href="/product-list/list?category=<%= category._id %>" class="card__button">Shop Now</a>
               </div>
             </article>
 
@@ -156,8 +154,13 @@
             <p><%= product.category.name %></p>
             <p>$<%= product.price %></p>
             <div class="button-group">
-             <button ><i class='bx bx-cart'></i></button>
-            <button ><i class='bx bx-heart'></i></button>
+              <% if(userName){ %>
+              <button onclick="addToCart(`<%=product._id %>`)"><i class='bx bx-cart'></i></button>
+              <button onclick="addToWishlist(`<%=product._id %>`,this)"><% if(wishlist.items.includes(product._id)){ %><i class='bx bxs-heart'></i> <% }else{ %><i class='bx bx-heart red'></i> <% } %></button>
+            <% }else{ %>
+              <a href="/user/login"><i class='bx bx-cart'></i></a>
+              <a href="/user/login"><i class='bx bx-heart'></i></a>
+              <% } %>
             <a href="/product-details/<%= product._id %>"><i class='bx bx-info-circle'></i></a> 
             </div>
             
@@ -165,10 +168,28 @@
         </div>
       </div>
       <% }) %>
+
+            <!-- TOAST MESSAGE FOR AddToWishlist BEGIN -->
+      
+            <div class="toast-container position-fixed bottom-0 end-0 p-3">
+              <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                
+            <div class="toast-body d-flex justify-content-center align-items-center" style="background-color: rgb(255, 255, 255);  color: rgb(0, 0, 0);">
+              <i class='bx bx-check'></i><p style="padding: 0; margin: 0;">Added To your Wishlist. </p>
+              <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+          </div>
+        </div>
+      
+        <!-- TOAST MESSAGE FOR AddToWishlist END -->
       
 
     </div>
-    
+
+    <%- include("../includes/userfooter.ejs") %>
+    <!-- Sweet Alert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>  
+
     <!-- Bootsrtap script -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
@@ -186,6 +207,98 @@
       });
       });
       /* LOADER WHEN WINDOW LOADS END*/
+
+          /* ADD TO CART BEGIN */
+
+    function addToCart(id){
+      fetch("/user/add_cart/"+id,{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        }
+      })
+      .then((response)=>{
+        if(response.ok){
+          Swal.fire({
+            title: 'Product Added',
+            text: 'Your product has been added to the cart.',
+            icon: 'success',
+            showCancelButton: true,
+            cancelButtonText: 'Continue Browsing',
+            showConfirmButton: true,
+            confirmButtonText: 'Go to Cart',
+            allowOutsideClick: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/user/cart';
+                }
+            });
+          }else{
+            return response.json();
+          }
+        })
+        .then((data)=>{
+          if(data.outOfStock){
+            Swal.fire({
+              title: "Out Of Stock",
+              text: "The product is not in stock.",
+              icon: "error"
+            });
+          }else if(data.maxQuantity){
+            Swal.fire({
+              title: "Quantity Limit!",
+              text: "Max Quantity is 3 Bottles.",
+              icon: "error"
+            });
+          }
+          else{
+            throw new Error("Something Happened")
+          }
+        })
+      .catch((err)=>{
+        console.log("Something Happened")
+      })
+      
+    }
+
+    /* ADD TO CART END */
+
+    /* ADD TO WISHLIST BEGIN */
+
+    function addToWishlist(id,btn){
+
+fetch("/user/addWishlist/"+id,{
+  method:"POST",
+  headers:{
+    "Content-Type":"application/json"
+  }
+})
+.then((response)=>{
+  if(!response.ok){
+    throw new Error("Something Happened")
+  }
+    return response.json();
+  })
+  .then((data)=>{
+    const toastLiveExample = document.getElementById('liveToast')
+    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
+    let element = btn.getElementsByTagName('i');
+    if(data.action){
+      element[0].className = 'bx bxs-heart';
+      document.querySelector(".toast-body p").innerHTML="Added To your Wishlist."
+      toastBootstrap.show();
+    }else{
+      element[0].className = 'bx bx-heart red';
+      document.querySelector(".toast-body p").innerHTML="Removed From your Wishlist."
+      toastBootstrap.show();
+    }
+  })
+.catch((err)=>{
+  console.log("Something Happened")
+})
+
+}
+/* ADD TO WISHLIST END */
       
     </script>
 

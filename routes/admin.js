@@ -3,46 +3,52 @@ const router=express.Router();
 
 const adminController=require("../controllers/admin")
 const isAuth=require("../middleware/isAuth.js")
+const multer=require("../config/multer.js")
 
-const multer=require("multer")
-const fileStorage=multer.diskStorage({
-    destination:(req,file,cb)=>{
-        cb(null,"uploads/")
-    },
-    filename:(req,file,cb)=>{
-        cb(null,Date.now()+'-'+file.originalname)
-    }
-})
-
-const fileFilter=(req,file,cb)=>{
-    if(file.mimetype === 'image/png'||file.mimetype === 'image/jpg'||file.mimetype === 'image/jpeg'){
-        cb(null,true)
-    }else{
-        cb(null,false)
-    }
-}
-const upload=multer({storage:fileStorage,fileFilter:fileFilter})
-
+/* Login */
 router.get("/",adminController.getLogin)
 router.post("/login",adminController.postLogin)
 router.post("/logout",isAuth.isAdmin,adminController.postLogout)
+
+/* Dashboard */
 router.get("/dashboard",isAuth.isAdmin,adminController.getDashboard)
+
+/* User */
 router.get("/user",isAuth.isAdmin,adminController.getUser)
 router.patch("/user-status/:userid",adminController.patchUserStatus)
-router.get("/category",isAuth.isAdmin,adminController.getCategory)
-router.patch("/category-status/:categoryid",adminController.patchCategoryStatus)
-router.get("/product",isAuth.isAdmin,adminController.getProduct)
-router.patch("/product-status/:productid",adminController.patchProductStatus)
-router.get("/banner",isAuth.isAdmin,adminController.getBanner)
 
+/* Order */
 router.get("/order",isAuth.isAdmin,adminController.getOrder)
 router.patch("/updateOrderStatus/:orderId",isAuth.isAdmin,adminController.patchOrderStatus)
 
-router.post("/add-category",isAuth.isAdmin,upload.single("image"),adminController.postAddCategory)
-router.post("/edit-category",isAuth.isAdmin,upload.single("editimage"),adminController.postEditCategory)/* Change To PUT */
+/* Category */
+router.get("/category",isAuth.isAdmin,adminController.getCategory)
+router.patch("/category-status/:categoryid",adminController.patchCategoryStatus)
+router.post("/add-category",isAuth.isAdmin,multer.upload.single("image"),adminController.postAddCategory)
+router.post("/edit-category",isAuth.isAdmin,multer.upload.single("editimage"),adminController.postEditCategory)/* Change To PUT */
+router.patch("/categoryDiscount",isAuth.isAdmin,adminController.patchCategoryDiscount)
+
+/* Product */
+router.get("/product",isAuth.isAdmin,adminController.getProduct)
+router.patch("/product-status/:productid",adminController.patchProductStatus)
 router.get("/add-product",isAuth.isAdmin,adminController.getAddProduct)
-router.post("/add-product",isAuth.isAdmin,upload.array("product_image",8),adminController.postAddProduct)
+router.post("/add-product",isAuth.isAdmin,multer.checkMulter,adminController.postAddProduct)
 router.get("/edit-product/:product_id",isAuth.isAdmin,adminController.getEditProduct)   
-router.post("/edit-product",isAuth.isAdmin,upload.array("product_image",8),adminController.postEditProduct)/* Change To PUT */
+router.post("/edit-product",isAuth.isAdmin,multer.checkMulter,adminController.postEditProduct)/* Change To PUT */
+router.patch("/discount",isAuth.isAdmin,adminController.patchProductDiscount)
+
+/* Coupon */
+router.get("/coupon",isAuth.isAdmin,adminController.getCoupon)
+router.post("/add-coupon",isAuth.isAdmin,adminController.postAddCoupon)
+router.delete("/deleteCoupon/:id",isAuth.isAdmin,adminController.deleteCoupon)
+router.put("/edit-coupon",isAuth.isAdmin,adminController.putEditCoupon)
+
+/* Sales Report */
+router.get("/sales",isAuth.isAdmin,adminController.getSalesReport)
+router.get("/salesPdf",isAuth.isAdmin,adminController.getSalesReportPdf)
+router.get("/salesExcel",isAuth.isAdmin,adminController.getSalesReportExcel)
+
+/* Banner */
+router.get("/banner",isAuth.isAdmin,adminController.getBanner)
 
 module.exports=router

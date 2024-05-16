@@ -5,12 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login</title>
 
+    <!-- Bootstrap link -->
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
     <link href="/css/user/login.css" rel="stylesheet"/>
     <!-- Boxicon-icons  -->
 
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 
-
+    <style>
+      input:-webkit-autofill,
+      input:-webkit-autofill:hover, 
+      input:-webkit-autofill:focus, 
+      input:-webkit-autofill:active{
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: #ffffff;
+          transition: background-color 5000s ease-in-out 0s;
+          box-shadow: inset 0 0 20px 20px #23232329;
+      }
+    </style>
   </head>
   <body>
 
@@ -39,9 +53,9 @@
     <div class="background"></div>
     <div class="container">
       <div class="content">
-        <h2 class="logo">Meghaj</h2>
+        <h2 class="logo">Alchemy</h2>
         <div class="text-sci">
-          <h2>Welcome!<br><span>To Our New Website</span></h2>
+          <h2>Welcome!<br><span>To Alchemy</span></h2>
           <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum velit libero eum omnis, iste distinctio tenetur soluta asperiores, enim eaque reprehenderit ipsum aut. Doloribus, quia quam autem perferendis ea qui.</p>
           <div class="social-icons">
             <a href="#"><i class='bx bxl-linkedin'></i></a>
@@ -80,7 +94,7 @@
 
             <button type="submit" class="btn">Sign In</button>
             <h3>OR</h3>
-            <a class="button google" href="/user/google">Sign In With Google<i class='bx bxl-google'></i></a>
+            <a class="button google btn " href="/user/google">Sign In With Google<i class='bx bxl-google'></i></a>
 
             <div class="login-register">
               <p>Don't have an account? <button type="button" class="register-link">Sign up</button></p>
@@ -164,6 +178,7 @@
           </div>
 
           <div class="form-box forgot_email">
+
             <form onsubmit="forgotemail(event)" id="forgotform-email">
 
             <h2>Enter Your Email</h2>
@@ -174,6 +189,10 @@
               <span class="icon"><i class='bx bx-envelope'></i></span>
               <input type="email" name="email" id="forgot" required>
               <label for="forgot" class="input-label">Email</label>
+            </div>
+
+            <div class="remember-forgot">
+              <button class="goback-link" type="button">Go back</button>
             </div>
 
             <button type="submit" class="btn">Verify</button>
@@ -421,7 +440,7 @@
           })
           .then(response=>{
             if(response.ok){
-              window.location.href="/home"
+              window.location.href="/"
             }
             else{
               return response.json()
@@ -435,14 +454,11 @@
       }
 
       function forgotemail(event){
-
-        const loader=document.querySelector(".overlay");
-        loader.style.display="flex"
-
-        const errorMessage = document.querySelector('.forgot-email-message p');
-
         event.preventDefault()
 
+        const loader=document.querySelector(".overlay");
+        loader.style.display="flex";
+        const errorMessage = document.querySelector('.forgot_email_message p');
         const form_data=new FormData(event.target)
         let json_form={}
         form_data.forEach((value,key)=>{
@@ -456,13 +472,13 @@
             },
             body:JSON.stringify(json_form)
           })
-          .then(response=>{
-            if(response.ok)
-            return response.json()
-          else
-          throw new Error(response.statusText)
-          })
+          .then(response=>response.json())
           .then((data)=>{
+            if(data.error){
+              errorMessage.innerHTML=data.error;
+            setTimeout(()=>errorMessage.innerHTML="",3000)
+            loader.style.display="none"
+            }else{
               const customEvent=new CustomEvent("forgotemail",{
                 bubbles:true,
                 cancelable:true
@@ -470,12 +486,15 @@
               const targetElement=document.querySelector('.forgot_email');
               targetElement.dispatchEvent(customEvent);
               loader.style.display="none"
+
+            }
           })
           .catch(err=>{
             errorMessage.innerHTML=err.message;
             setTimeout(()=>errorMessage.innerHTML="",3000)
             loader.style.display="none"
           })
+
       }
 
       function forgotpassword(event){
@@ -502,13 +521,13 @@
             },
             body:JSON.stringify(json_form)
           })
-          .then(response=>{
-            if(response.ok)
-            return response.json()
-          else
-          throw new Error(response.statusText)
-          })
+          .then(response=>response.json())
           .then((data)=>{
+            if(data.error){
+              errorMessage.innerHTML=data.error;
+            setTimeout(()=>errorMessage.innerHTML="",3000)
+            loader.style.display="none"
+            }else{
               const customEvent=new CustomEvent("forgotpassword",{
                 bubbles:true,
                 cancelable:true
@@ -518,12 +537,14 @@
               loader.style.display="none";
               errorMessageOtp .innerHTML=data.message
               setTimeout(()=>errorMessageOtp .innerHTML="",3000)
+            }
           })
           .catch(err=>{
             errorMessage.innerHTML=err.message;
             setTimeout(()=>errorMessage.innerHTML="",3000)
             loader.style.display="none"
           })
+          loader.style.display="none"
       }
 
       function forgototp(event){
@@ -549,13 +570,13 @@
             },
             body:JSON.stringify(json_form)
           })
-          .then(response=>{
-            if(response.ok)
-            return response.json()
-          else
-          throw new Error(response.statusText)
-          })
+          .then(response=>response.json())
           .then((data)=>{
+            if(data.error){
+              errorMessage.innerHTML=data.error;
+            setTimeout(()=>errorMessage.innerHTML="",3000)
+            loader.style.display="none"
+            }else{
               const customEvent=new CustomEvent("forgototp",{
                 bubbles:true,
                 cancelable:true
@@ -565,6 +586,7 @@
               loader.style.display="none";
               errorMessageLogin.innerHTML=data.message
               setTimeout(()=>errorMessageLogin.innerHTML="",3000)
+            }
           })
           .catch(err=>{
             errorMessage.innerHTML=err.message;

@@ -1,44 +1,43 @@
 const Category=require("../models/category.js")
 const Product=require("../models/product.js")
 const Cart=require("../models/cart.js")
+const Wishlist=require("../models/wishlist.js")
+const User=require("../models/user.js")
 
 const ITEMS_PER_PAGE=9;
 
-exports.getLandingPage=async (req,res,next)=>{
-    
-    if(req.session.user)
-    return res.redirect("/home")
-
-    const categories= await Category.find();
-    const products=await Product.find({isListed:true}).populate("category");
-    const display_products=products.slice(0,8)
-
-    res.render("product/landingPage",{categories,display_products})
-}
-
 exports.getHome=async (req,res,next)=>{
-
+    let userName;
+    (req.session.user) ? userName=true : userName=false
     const categories= await Category.find().limit(6);
     const products=await Product.find({isListed:true}).limit(8).populate("category");
+    const wishlist=await Wishlist.findOne({user:req.session.user})
     const display_products=products.slice(0,8)
-    res.render("product/home",{categories,display_products})
+    res.render("product/home",{categories,display_products,userName,wishlist})
 }
 
 exports.getProductDetails=async (req,res,next)=>{   
     try{
-        let productInCart;
+        let productInCart,cart,index,userName;
         const id=req.params.prodid
         const product=await Product.findById(id).populate("category");
-        const cart=await Cart.findOne({user:req.session.user||"663a2b00293758b81d67eb0a"})
-        const index=cart.items.findIndex((val)=>{
-            return val.product.toString()===product._id.toString()
-        })
-        if(index>=0){
-            productInCart=true
+
+        if(req.session.user){
+
+            cart=await Cart.findOne({user:req.session.user})
+            index=cart.items.findIndex((val)=>{
+                return val.product.toString()===product._id.toString()
+            })
+            if(index>=0){
+                productInCart=true
+            }else{
+                productInCart=false
+            }
+            userName=true;
         }else{
-            productInCart=false
+            userName=false;
         }
-        res.render("product/productdetail",{product,productInCart})
+        res.render("product/productdetail",{product,productInCart,userName})
     }catch(err){
         console.log(err)
     }
@@ -46,20 +45,28 @@ exports.getProductDetails=async (req,res,next)=>{
 }
 
 exports.getProductList=async (req,res,next)=>{   
-
+    const category=req.query.category;
     let action=req.params.action;
     const page=+req.query.page||1;
-    const search=req.query.search
-    let searchquery;
+    const search=req.query.search;
+    let searchquery,userName;
     if(search){
         searchquery=true;
     }
+    (req.session.user) ? userName=true : userName=false
     try{
         let product_count;
-        const products=await filterProducts(action,page,search,searchquery)
-        product_count=await Product.find({isListed:true}).countDocuments();
-        if(searchquery){
-            product_count=await Product.find({isListed:true,name:{ $regex: '^' + search, $options:'i'}}).countDocuments();
+        const wishlist=await Wishlist.findOne({user:req.session.user})
+        const categories=await Category.find({isListed:true});
+        const products=await filterProducts(action,page,search,searchquery,category)
+        if(category&&searchquery){
+            product_count=await Product.find({isListed:true,name: { $regex: search, $options: 'i' },category:category}).countDocuments();
+        }else if(searchquery){
+            product_count=await Product.find({isListed:true,name: { $regex: search, $options: 'i' }}).countDocuments();
+        }else if(category){
+            product_count=await Product.find({isListed:true,category:category}).countDocuments();
+        }else{
+            product_count=await Product.find({isListed:true}).countDocuments();
         }
 
         res.render("product/productlist",{
@@ -71,39 +78,62 @@ exports.getProductList=async (req,res,next)=>{
             previousPage: page-1,
             lastPage:Math.ceil(product_count / ITEMS_PER_PAGE),
             action:action,
-            search: (search)?search : ""
+            search: (search)?search : "",
+            wishlist:wishlist,
+            categories:categories,
+            category:(category)?category : "",
+            userName:userName
         })
     }catch(err){
         console.log(err)
     }
 }
     
-async function filterProducts(action,page,search,searchquery){   
+async function filterProducts(action,page,search,searchquery,category){   
         let products;
+        let filter;
         if(action==="lowToHigh"&&searchquery){
-            products=await Product.find({isListed:true,name:{ $regex: '^' + search, $options:'i'}}).sort({price:1}).skip((page-1)*ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE).populate("category");  
+            (category)? filter={isListed:true,name: { $regex: search, $options: 'i' },category:category} : filter={isListed:true,name: { $regex: search, $options: 'i' }}
+            products=await Product.find(filter).sort({discountPrice:1}).skip((page-1)*ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE).populate("category");  
         }else if(action==="highToLow"&&searchquery){
-            products=await Product.find({isListed:true,name:{ $regex: '^' + search, $options:'i'}}).sort({price:-1}).skip((page-1)*ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE).populate("category");
+            (category)? filter={isListed:true,name: { $regex: search, $options: 'i' },category:category} : filter={isListed:true,name: { $regex: search, $options: 'i' }}
+            products=await Product.find(filter).sort({discountPrice:-1}).skip((page-1)*ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE).populate("category");
         }else if(action==="newArrivals"&&searchquery){
-            products=await Product.find({isListed:true,name:{ $regex: '^' + search, $options:'i'}}).sort({_id:-1}).skip((page-1)*ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE).populate("category");
+            (category)? filter={isListed:true,name: { $regex: search, $options: 'i' },category:category} : filter={isListed:true,name: { $regex: search, $options: 'i' }}
+            products=await Product.find(filter).sort({_id:-1}).skip((page-1)*ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE).populate("category");
         }else if(action==="aA-Zz"&&searchquery){
-            products=await Product.find({isListed:true,name:{ $regex: '^' + search, $options:'i'}}).sort({name:1}).skip((page-1)*ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE).populate("category");
+            (category)? filter={isListed:true,name: { $regex: search, $options: 'i' },category:category} : filter={isListed:true,name: { $regex: search, $options: 'i' }}
+            products=await Product.find(filter).sort({name:1}).skip((page-1)*ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE).populate("category");
         }else if(action==="Zz-aA"&&searchquery){
-            products=await Product.find({isListed:true,name:{ $regex: '^' + search, $options:'i'}}).sort({name:-1}).skip((page-1)*ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE).populate("category");
+            (category)? filter={isListed:true,name: { $regex: search, $options: 'i' },category:category} : filter={isListed:true,name: { $regex: search, $options: 'i' }}
+            products=await Product.find(filter).sort({name:-1}).skip((page-1)*ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE).populate("category");
+        }else if(action==="stock"&&searchquery){
+            (category)? filter={isListed:true,name: { $regex: search, $options: 'i' },category:category,stock:{$ne:0}} : filter={isListed:true,name: { $regex: search, $options: 'i' },stock:{$ne:0}}
+            products=await Product.find(filter).sort({name:-1}).skip((page-1)*ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE).populate("category");
         }else if(action==="lowToHigh"){
-            products=await Product.find({isListed:true}).sort({price:1}).skip((page-1)*ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE).populate("category");  
+            (category)? filter={isListed:true,category:category} : filter={isListed:true}
+            products=await Product.find(filter).sort({discountPrice:1}).skip((page-1)*ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE).populate("category");  
         }else if(action==="highToLow"){
-            products=await Product.find({isListed:true}).sort({price:-1}).skip((page-1)*ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE).populate("category");
+            (category)? filter={isListed:true,category:category} : filter={isListed:true}
+            products=await Product.find(filter).sort({discountPrice:-1}).skip((page-1)*ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE).populate("category");
         }else if(action==="newArrivals"){
-            products=await Product.find({isListed:true}).sort({_id:-1}).skip((page-1)*ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE).populate("category");
+            (category)? filter={isListed:true,category:category} : filter={isListed:true}
+            products=await Product.find(filter).sort({_id:-1}).skip((page-1)*ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE).populate("category");
         }else if(action==="aA-Zz"){
-            products=await Product.find({isListed:true}).sort({name:1}).skip((page-1)*ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE).populate("category");
+            (category)? filter={isListed:true,category:category} : filter={isListed:true}
+            products=await Product.find(filter).sort({name:1}).skip((page-1)*ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE).populate("category");
         }else if(action==="Zz-aA"){
-            products=await Product.find({isListed:true}).sort({name:-1}).skip((page-1)*ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE).populate("category");
+            (category)? filter={isListed:true,category:category} : filter={isListed:true}
+            products=await Product.find(filter).sort({name:-1}).skip((page-1)*ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE).populate("category");
+        }else if(action==="stock"){
+            (category)? filter={isListed:true,category:category,stock:{$ne:0}} : filter={isListed:true,stock:{$ne:0}}
+            products=await Product.find(filter).sort({name:-1}).skip((page-1)*ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE).populate("category");
         }else if(searchquery){
-            products=await Product.find({isListed:true,name:{ $regex: '^' + search, $options:'i'}}).skip((page-1)*ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE).populate("category")
-        }
-        else{
+            (category)? filter={isListed:true,name: { $regex: search, $options: 'i' },category:category} : filter={isListed:true,name: { $regex: search, $options: 'i' }}
+            products=await Product.find(filter).skip((page-1)*ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE).populate("category")
+        }else if(category){
+            products=await Product.find({isListed:true,category:category}).skip((page-1)*ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE).populate("category");
+        }else{
             products=await Product.find({isListed:true}).skip((page-1)*ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE).populate("category");
         }
         return products;       

@@ -9,113 +9,217 @@
 
     <!----===== Boxicons CSS ===== -->
     <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    
+<style>
 
-  
+  .highlight{
+    background-color: #695cfe;
+    border-radius: 6px;
+  }
+  .highlight a i,
+  .highlight a span {
+  color: white !important;
+}
+#filterForm{
+  margin-left: 30px;
+}
+</style>
+
 </head>
 <body>
 
-    
-  <body>
-    <nav class="sidebar close">
-      <header>
-        <div class="image-text">
-          <span class="image">
-            <img src="logo.png" alt="">
-          </span>
-  
-          <div class="text logo-text">
-            <span class="name">Admin</span>
-            <span class="profession">Web developer</span>
-          </div>
-        </div>
-  
-        <i class='bx bx-chevron-right toggle'></i>
-      </header>
-  
-      <div class="menu-bar">
-        <div class="menu">
-  
-          <li class="search-box">
-            <i class='bx bx-search icon'></i>
-            <input type="text" placeholder="Search Ganes...">
-          </li>
-  
-          <ul class="menu-links">
-            <li class="nav-link">
-              <a href="/admin/dashboard">
-                <i class='bx bx-home-alt icon'></i>
-                <span class="text nav-text">Dashboard</span>
-              </a>
-            </li>
-  
-            <li class="nav-link">
-              <a href="/admin/user">
-                <i class='bx bx-user icon'></i>
-                <span class="text nav-text">User</span>
-              </a>
-            </li>
-  
-            <li class="nav-link">
-              <a href="/admin/category">
-                <i class='bx bxs-category icon'></i>
-                <span class="text nav-text">Category</span>
-              </a>
-            </li>
-  
-            <li class="nav-link">
-              <a href="/admin/product">
-                <i class='bx bx-pie-chart-alt icon'></i>
-                <span class="text nav-text">Product</span>
-              </a>
-            </li>
-  
-            <li class="nav-link">
-              <a href="/admin/order">
-                <i class='bx bx-heart icon'></i>
-                <span class="text nav-text">Order</span>
-              </a>
-            </li>
-  
-            <li class="nav-link">
-              <a href="/admin/banner">
-                <i class='bx bx-wallet icon'></i>
-                <span class="text nav-text">Banner</span>
-              </a>
-            </li>
-  
-          </ul>
-        </div>
-  
-        <div class="bottom-content">
-          <li class="">
-            <form action="/admin/logout" method="post">
-                <button>
-                  <i class='bx bx-log-out icon'></i>
-                <span class="text nav-text">Logout</span>
-              </button>  
-            </form>
-  
-          <li class="mode">
-            <div class="sun-moon">
-              <i class='bx bx-moon icon moon'></i>
-              <i class='bx bx-sun icon sun'></i>
-            </div>
-            <span class="mode-text text">Dark mode</span>
-  
-            <div class="toggle-switch">
-              <span class="switch"></span>
-            </div>
-          </li>
-  
-        </div>
-      </div>
-  
-    </nav>
+  <%- include('../includes/navigation.ejs') %>
   
     <section class="home">
       <div class="text">Dashboard</div>
+
+      <form id="filterForm" action="/admin/dashboard" method="get">
+        <select name="timeFrame" id="timeFrame">
+          <option value="daily" <% if(timeFrame==="daily"){ %> selected <% } %>>Daily</option>
+          <option value="weekly" <% if(timeFrame==="weekly"){ %> selected <% } %>>Weekly</option>
+          <option value="monthly" <% if(timeFrame==="monthly"){ %> selected <% } %>>Monthly</option>
+          <option value="yearly" <% if(timeFrame==="yearly"){ %> selected <% } %>>Yearly</option>
+        </select>
+        <button type="submit">Filter</button>
+    </form>
+      <div class="container">
+
+        <div class="row m-2" style="width: 1000px;background-color: white;border-radius: 5px;">
+          <canvas id="myChart"></canvas>
+        </div>
+        <div class="row">
+
+          <div class="m-2" style="width: 500px;background-color: white;border-radius: 5px;">
+            <canvas id="myChart2"></canvas>
+          </div>
+    
+          <div class="m-2" style="width: 500px;background-color: white;border-radius: 5px;">
+            <canvas id="myChart3"></canvas>
+          </div>
+        </div>
+      </div>
+      
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      
+
     </section>
-  
+
+    <script>
+      const ctx = document.getElementById('myChart');
+      const ctx2 = document.getElementById('myChart2');
+      const ctx3 = document.getElementById('myChart3');
+
+      /* TopSellingProducts Begin */
+    
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: [<% topSellingProducts.forEach((product, index) => { %>
+            '<%= product.productName %>'<% if (index < topSellingProducts.length - 1) { %>, <% } %>
+        <% }); %>],
+          datasets: [{
+            label: 'Top 10 Selling Products',
+            data: [<% topSellingProducts.forEach((product, index) => { %>
+                '<%= product.totalQuantitySold %>'<% if (index < topSellingProducts.length - 1) { %>, <% } %>
+            <% }); %>],
+            backgroundColor: [
+            'rgba(255, 99, 132, 0.2)',
+                'rgba(255, 159, 64, 0.2)',
+                'rgba(255, 205, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(201, 203, 207, 0.2)',
+                'rgba(255, 159, 64, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(153, 102, 255, 0.2)'
+          ],
+            borderColor: [
+            'rgb(255, 99, 132)',
+                'rgb(255, 159, 64)',
+                'rgb(255, 205, 86)',
+                'rgb(75, 192, 192)',
+                'rgb(54, 162, 235)',
+                'rgb(153, 102, 255)',
+                'rgb(201, 203, 207)',
+                'rgb(255, 159, 64)',
+                'rgb(54, 162, 235)',
+                'rgb(153, 102, 255)'
+            ],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+
+      /* TopSellingProducts End */
+
+      /* TopSellingCategories Begin */
+
+      new Chart(ctx2, {
+  type: 'doughnut', // Change from 'bar' to 'doughnut'
+  data: {
+    labels: [
+      <% topSellingCategories.forEach((category, index) => { %>
+        '<%= category.categoryName %>'<% if (index < topSellingCategories.length - 1) { %>, <% } %>
+      <% }); %>
+    ],
+    datasets: [{
+      label: 'Top 10 Selling Categories',
+      data: [
+        <% topSellingCategories.forEach((category, index) => { %>
+          <%= category.totalQuantitySold %><% if (index < topSellingCategories.length - 1) { %>, <% } %>
+        <% }); %>
+      ],
+      backgroundColor: [
+        'rgba(255, 99, 132, 0.2)',
+        'rgba(255, 159, 64, 0.2)',
+        'rgba(255, 205, 86, 0.2)',
+        'rgba(75, 192, 192, 0.2)',
+        'rgba(54, 162, 235, 0.2)',
+        'rgba(153, 102, 255, 0.2)',
+        'rgba(201, 203, 207, 0.2)',
+        'rgba(255, 159, 64, 0.2)',
+        'rgba(54, 162, 235, 0.2)',
+        'rgba(153, 102, 255, 0.2)'
+      ],
+      borderColor: [
+        'rgb(255, 99, 132)',
+        'rgb(255, 159, 64)',
+        'rgb(255, 205, 86)',
+        'rgb(75, 192, 192)',
+        'rgb(54, 162, 235)',
+        'rgb(153, 102, 255)',
+        'rgb(201, 203, 207)',
+        'rgb(255, 159, 64)',
+        'rgb(54, 162, 235)',
+        'rgb(153, 102, 255)'
+      ],
+            hoverOffset: 4
+          }]
+        },
+      });
+
+
+      /* TopSellingCategories END */
+      /* topSellingBrands Begin */
+
+      new Chart(ctx3, {
+        type: 'pie',
+        data: {
+          labels: [
+            <% topSellingBrands.forEach((brand, index) => { %>
+              '<%= brand.brandName %>'<% if (index < topSellingBrands.length - 1) { %>, <% } %>
+            <% }); %>
+          ],
+          datasets: [{
+            label: 'Top 10 Selling Brands',
+            data: [
+              <% topSellingBrands.forEach((brand, index) => { %>
+                <%= brand.totalQuantitySold %><% if (index < topSellingBrands.length - 1) { %>, <% } %>
+              <% }); %>
+            ],
+            backgroundColor: [
+              'rgba(255, 99, 132, 0.2)',
+              'rgba(255, 159, 64, 0.2)',
+              'rgba(255, 205, 86, 0.2)',
+              'rgba(75, 192, 192, 0.2)',
+              'rgba(54, 162, 235, 0.2)',
+              'rgba(153, 102, 255, 0.2)',
+              'rgba(201, 203, 207, 0.2)',
+              'rgba(255, 159, 64, 0.2)',
+              'rgba(54, 162, 235, 0.2)',
+              'rgba(153, 102, 255, 0.2)'
+            ],
+            borderColor: [
+              'rgb(255, 99, 132)',
+              'rgb(255, 159, 64)',
+              'rgb(255, 205, 86)',
+              'rgb(75, 192, 192)',
+              'rgb(54, 162, 235)',
+              'rgb(153, 102, 255)',
+              'rgb(201, 203, 207)',
+              'rgb(255, 159, 64)',
+              'rgb(54, 162, 235)',
+              'rgb(153, 102, 255)'
+            ],
+            hoverOffset: 4
+          }]
+        },
+      });
+
+
+      /* topSellingBrands END */
+
+    </script>
+
+    <!-- Left Navbar Script Begin -->
     <script>
       const body = document.querySelector('body'),
         sidebar = body.querySelector('nav'),
@@ -138,6 +242,7 @@
         }
       });
     </script>
+    <!-- Left Navbar Script END -->
 
     
     

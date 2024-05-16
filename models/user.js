@@ -28,16 +28,27 @@ const userSchema=new Schema({
     referralCode:{
         type:String
     },
+    referredCode:{
+        type: String
+    },
     googleId:{
         type:String
     },
     createdAt:{
         type:Date,
         default:Date.now
+    },
+    wallet:{
+        balance: {type:Number, default:0},
+        transactions:[{
+            amount: {type: Number},
+            description:{type:String},
+            date: {type: Date, default: Date.now},
+        }],
     }
 });
 
-userSchema.statics.signup=async function (signup_name,signup_email,signup_password,signup_referral){
+userSchema.statics.signup=async function (signup_name,signup_email,signup_password,signup_referral,referralCode){
 
     const salt=await bcrypt.genSalt(10)
     const hashedPassword=await bcrypt.hash(signup_password,salt)
@@ -46,7 +57,8 @@ userSchema.statics.signup=async function (signup_name,signup_email,signup_passwo
         email:signup_email,
         password:hashedPassword,
         isBlocked:false,
-        referralCode:signup_referral,
+        referralCode:referralCode,
+        referredCode:signup_referral,
         cart:[],
         wishlist:[]
     })

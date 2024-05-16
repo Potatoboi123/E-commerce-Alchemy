@@ -11,7 +11,7 @@
 
     <!-- Stylesheet -->
 
-    <link rel="stylesheet" href="/css/user/useraddress.css">
+    <link rel="stylesheet" href="/css/user/userprofile.css">
 
     <!-- Boxicon-icons  -->
 
@@ -32,6 +32,37 @@
       .modal-content input:focus::placeholder {
         color: #afaaaa; 
       }
+      .mainheading{
+        background-image: url('/images/user/profile-background.jpg');
+        background-size: cover;
+        background-position: center;
+        margin-bottom: 2rem;
+      }
+      .padding{
+        height: 1rem;
+      }
+      .card-body{
+        border: 2px solid white;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+      }
+      .bx.bx-chevron-right.toggle {
+      display: none;
+      }
+      @media screen and (max-width: 600px) {
+        .bx.bx-chevron-right.toggle {
+        display: block;
+        }
+      }
+      input:-webkit-autofill,
+      input:-webkit-autofill:hover, 
+      input:-webkit-autofill:focus, 
+      input:-webkit-autofill:active{
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: #ffffff;
+          transition: background-color 5000s ease-in-out 0s;
+          box-shadow: inset 0 0 20px 20px #23232329;
+      }
     </style>
     
 </head>
@@ -41,7 +72,7 @@
     <header class="header">
 
         <div class="navbar">
-          <a href="/home">Home</a>
+          <a href="/">Home</a>
           <a href="/product-list/list">Products</a>
         </div>
         <div class="search-bar-container">
@@ -61,7 +92,7 @@
 
 
 
-  <nav class="sidebar close">
+  <nav class="sidebar">
     <header>
       <div class="image-text">
         <span class="image">
@@ -69,8 +100,8 @@
         </span>
 
         <div class="text logo-text">
-          <span class="name">[Name of Website]</span>
-          <span class="profession">Web developer</span>
+          <span class="name">Alchemy</span>
+          <span class="profession"><%= userName %></span>
         </div>
       </div>
 
@@ -89,7 +120,7 @@
           </li>
 
           <li class="nav-link">
-            <a href="/user/address">
+            <a href="/user/address" style="background-color: #183D3D;">
               <i class='bx bx-map icon'></i>
               <span class="text nav-text">Manage Address</span>
             </a>
@@ -122,6 +153,14 @@
               <span class="text nav-text">Coupon</span>
             </a>
           </li>
+
+          <li class="nav-link">
+            <a href="/user/chat">
+              <i class='bx bxs-chat icon'></i>
+              <span class="text nav-text">Chat</span>
+            </a>
+          </li>
+          
         </ul>
       </div>
       
@@ -131,19 +170,29 @@
   </nav>
 
   <section class="home">
-    <div class="text">Manage Address</div>
 
-    <div class="main">
-      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@getbootstrap">Add Address</button>
-      <div class="address-multiple">
+    <div class="container mainheading" >
+      <div class="padding"></div>
+      <div class="d-flex justify-content-center py-5 pb-0"><a href="/">Home</a>/Address</div>
+      <div class="text d-flex justify-content-center pb-5"> <h2 style="color: rgb(0, 0, 0);">Manage Address</h2></div>
+    </div>
+
+    
+
+    <div class="container p-5 py-0">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h4" style="color: white;">Address Book</h1>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@getbootstrap">Add Address</button>
+    </div>
+      <div class="card" style="background: none;">
         <% if(addresses.length>0){ %>
           <% addresses.forEach((address)=>{ %>
 
-            <div class="address-single">
-              <p><%= address.name %> <%= address.phoneNo %></p>
-              <p><%= address.address %>,<%= address.locality %>,<%= address.city %>,<%= address.state %>-<%= address.pincode %></p>
+            <div class="card-body">
+              <p class="card-header" style="color: white;"><%= address.name %> <%= address.phoneNo %></p>
+              <p class="card-text"><%= address.address %>,<%= address.locality %>,<%= address.city %>,<%= address.state %>-<%= address.pincode %></p>
               <button type="button" class="btn btn-primary views" data-toggle="modal" data-target="#modalEditAddress" data-whatever="@mdo" onclick="populateAddress(`<%= JSON.stringify(address )%>`)">Edit Address</button>
-              <button onclick="deleteAddress(this)" data-id="<%= address._id %>">Delete</button>
+              <button onclick="deleteAddress(this)" class="btn btn-danger" data-id="<%= address._id %>">Delete</button>
             </div>
             
           <% }) %>
@@ -157,62 +206,69 @@
 
   <!-- ADD ADDRESS BOOTSTRAP MODAL BEGIN -->
  
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Add Address</h5>
-      </div>
-      <div class="modal-body">
-        <form onsubmit="addAddress(event)">
-          <div class="form-group">
-            <label for="name" class="col-form-label">Name:</label>
-            <input type="text" class="form-control" id="name" name="name" placeholder="Name" required="true">
-          </div>
-          <div class="form-group">
-            <label for="phoneNo" class="col-form-label">Phone:</label>
-            <input type="number" class="form-control" id="phoneNo" name="phoneNo" placeholder="10-digit mobile number" required="true">
-          </div>
-          <div class="form-group">
-            <label for="pincode" class="col-form-label">Pincode:</label>
-            <input type="number" class="form-control" id="pincode" name="pincode" placeholder="Pincode" required="true">
-          </div>
-          <div class="form-group">
-            <label for="locality" class="col-form-label">Locality:</label>
-            <input type="text" class="form-control" id="locality" name="locality" placeholder="Locality" required="true">
-          </div>
-          <div class="form-group">
-            <label for="address" class="col-form-label">Address:</label>
-            <textarea class="form-control" id="address" name="address" placeholder="Address(Area and Street)" required="true"></textarea>
-          </div>
-          <div class="form-group">
-            <label for="city" class="col-form-label">City/District/Town:</label>
-            <input type="text" class="form-control" id="city" name="city" placeholder="City/District/Town" required="true">
-          </div>
-          <div class="form-group">
-            <label for="state" class="col-form-label">State:</label>
-            <input type="text" class="form-control" id="state" name="state" placeholder="State" required="true">
-          </div>
-          <div class="form-group">
-            <label for="landmark" class="col-form-label">Landmark:</label>
-            <input type="text" class="form-control" id="landmark" name="landmark" placeholder="Landmark(Optional)">
-          </div>
-          <div class="form-group">
-            <label for="alternateNo" class="col-form-label">Alternate Phone no:</label>
-            <input type="number" class="form-control" id="alternateNo" name="alternateNo" placeholder="Alternate Phone No(Optional)">
-          </div>
-
-          <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-primary">Submit</button>
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Add Address</h5>
         </div>
-
-        </form>
+        <div class="modal-body">
+          <form onsubmit="addAddress(event)">
+            <div class="form-group">
+              <label for="name" class="col-form-label">Name:</label>
+              <input type="text" class="form-control" id="name" name="name" placeholder="Name" required>
+              <small class="error-message text-danger" id="name-error"></small>
+            </div>
+            <div class="form-group">
+              <label for="phoneNo" class="col-form-label">Phone:</label>
+              <input type="number" class="form-control" id="phoneNo" name="phoneNo" placeholder="10-digit mobile number" required>
+              <small class="error-message text-danger" id="phoneNo-error"></small>
+            </div>
+            <div class="form-group">
+              <label for="pincode" class="col-form-label">Pincode:</label>
+              <input type="number" class="form-control" id="pincode" name="pincode" placeholder="Pincode" required>
+              <small class="error-message text-danger" id="pincode-error"></small>
+            </div>
+            <div class="form-group">
+              <label for="locality" class="col-form-label">Locality:</label>
+              <input type="text" class="form-control" id="locality" name="locality" placeholder="Locality" required>
+              <small class="error-message text-danger" id="locality-error"></small>
+            </div>
+            <div class="form-group">
+              <label for="address" class="col-form-label">Address:</label>
+              <textarea class="form-control" id="address" name="address" placeholder="Address(Area and Street)" required></textarea>
+              <small class="error-message text-danger" id="address-error"></small>
+            </div>
+            <div class="form-group">
+              <label for="city" class="col-form-label">City/District/Town:</label>
+              <input type="text" class="form-control" id="city" name="city" placeholder="City/District/Town" required>
+              <small class="error-message text-danger" id="city-error"></small>
+            </div>
+            <div class="form-group">
+              <label for="state" class="col-form-label">State:</label>
+              <input type="text" class="form-control" id="state" name="state" placeholder="State" required>
+              <small class="error-message text-danger" id="state-error"></small>
+            </div>
+            <div class="form-group">
+              <label for="landmark" class="col-form-label">Landmark:</label>
+              <input type="text" class="form-control" id="landmark" name="landmark" placeholder="Landmark(Optional)">
+              <small class="error-message text-danger" id="landmark-error"></small>
+            </div>
+            <div class="form-group">
+              <label for="alternateNo" class="col-form-label">Alternate Phone no:</label>
+              <input type="number" class="form-control" id="alternateNo" name="alternateNo" placeholder="Alternate Phone No(Optional)">
+              <small class="error-message text-danger" id="alternateNo-error"></small>
+            </div>
+  
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+          </form>
+        </div>
       </div>
-      
     </div>
   </div>
-</div>
   <!-- ADD ADDRESS BOOTSTRAP MODAL END -->
 
   <!-- EDIT ADDRESS BOOTSTRAP MODAL BEGIN -->
@@ -285,11 +341,61 @@
       form_data.forEach((value,key)=>{
         json_form[key]=value;
       })
-      /* 
 
-      Validation Goes Here
+/* Validation BEGIN */
 
-       */
+document.querySelectorAll('.text-danger').forEach(errorElement => {
+      errorElement.textContent = '';
+    });
+
+    let isValid = true;
+
+    if (!json_form.name) {
+    document.getElementById('name-error').textContent = 'Name is required.';
+    isValid = false;
+  }
+
+  if (!json_form.phoneNo) {
+    document.getElementById('phoneNo-error').textContent = 'Phone number is required.';
+    isValid = false;
+  } else if (json_form.phoneNo.length !== 10 || isNaN(json_form.phoneNo)) {
+    document.getElementById('phoneNo-error').textContent = 'Phone number must be a 10-digit number.';
+    isValid = false;
+  }
+
+  if (!json_form.pincode) {
+    document.getElementById('pincode-error').textContent = 'Pincode is required.';
+    isValid = false;
+  } else if (json_form.pincode.length !== 6 || isNaN(json_form.pincode)) {
+    document.getElementById('pincode-error').textContent = 'Enter Valid Pincode';
+    isValid = false;
+  }
+
+  if (!json_form.locality) {
+    document.getElementById('locality-error').textContent = 'Locality is required.';
+    isValid = false;
+  }
+
+  if (!json_form.address) {
+    document.getElementById('address-error').textContent = 'Address is required.';
+    isValid = false;
+  }
+
+  if (!json_form.city) {
+    document.getElementById('city-error').textContent = 'City/District/Town is required.';
+    isValid = false;
+  }
+
+  if (!json_form.state) {
+    document.getElementById('state-error').textContent = 'State is required.';
+    isValid = false;
+  }
+
+    if (!isValid) {
+      return;
+    }
+    /* Validation END */
+
       fetch("/user/add_address",{
         method:"POST",
         headers:{

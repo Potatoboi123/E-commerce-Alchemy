@@ -24,7 +24,6 @@ const PORT=process.env.PORT||8080
 
 app.set("view engine","ejs")
 
-/* app.use(multer().single("image")) */
 app.use(bodyParser.urlencoded({extended:true}))
 app.use(express.json())
 
@@ -45,10 +44,41 @@ app.use(flash());
 app.use(passport.initialize())
 app.use(passport.session())
 
+//CORS HEADERS
+/* app.use((req,res,next)=>{
+    res.setHeader("Access-Control-Origin","*")
+    res.setHeader("Access-Control-Methods","GET,POST,PUT,PATCH,DELETE")
+    res.setHeader("Access-Control-Headers","Content-Type,Authorization")
+    next();
+}) */
+
+/* Development Begin */
+
+app.use((req,res,next)=>{
+    req.session.user="663a2b00293758b81d67eb0a";
+    req.session.admin=true
+    next();
+})
+
+/* Development End */
+
 app.use("/user",userRoutes);
 app.use("/admin",adminRoutes);
 app.use(productRoutes);
 
+app.use((req,res,next)=>{
+    let userName;
+    if(req.session.user){
+        userName=req.session.user
+    }else{
+        userName=null
+    }
+    res.render("errorPage",{userName})
+})
+
 mongoose.connect(MONGODB_URI)
-.then(()=>app.listen(PORT,()=>console.log(`Server listening on http://localhost:${PORT}`)))
+.then(()=>{
+    const server=app.listen(PORT,()=>console.log(`Server listening on http://localhost:${PORT}`))
+    const io = require('./config/socket.js').init(server);
+})
 .catch((err)=>console.log(err));

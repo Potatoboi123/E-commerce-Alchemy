@@ -6,7 +6,8 @@ const forgot_password_switch  = document.querySelector('.forgot_password');
 const loginLink = document.querySelector('.login-link');
 const registerLink = document.querySelector('.register-link');
 const otp_switch=document.querySelector('.otp');
-const forgotLink=document.querySelector(".forgot-link")
+const forgotLink=document.querySelector(".forgot-link");
+const goBackLink=document.querySelector(".goback-link");
 
 /* Switch SignIn To SignUp */
 registerLink.addEventListener("click",()=>{
@@ -29,6 +30,11 @@ loginLink.addEventListener("click",()=>{
 forgotLink.addEventListener("click",()=>{
   login_switch.classList.remove("active");
   forgot_email_switch.classList.add("active")
+})
+
+goBackLink.addEventListener("click",()=>{
+  login_switch.classList.add("active");
+  forgot_email_switch.classList.remove("active")
 })
 
 otp_switch.addEventListener("otp",()=>{

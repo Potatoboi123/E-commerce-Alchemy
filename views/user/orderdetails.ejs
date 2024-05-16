@@ -21,6 +21,52 @@
         .con{
             margin-top: 5rem;
         }
+        .feature-custom1{
+          background: none !important; 
+          border: 2px solid white;
+        }
+        .outerdiv{
+          display: flex;
+          justify-content: space-evenly;
+          flex-wrap: wrap;
+        }
+        .card{
+          margin-left: 2%;
+          box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.295);
+        }
+        /* .content{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2%;
+      } */
+      .wishlist-item {
+            border: 2px solid #ffffff;
+            border-radius: 10px;
+            background-color: #1c1c1c; /* Dark gray background */
+            transition: transform 0.2s;
+        }
+        .content div{
+          border: 2px solid rgba(102, 51, 153, 0.186);;
+          padding: 1rem;
+          transition: transform 0.2s;
+          border-radius: 10px;
+          display: flex;
+          flex-direction: column;
+          box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.479);
+          background-color: rgba(102, 51, 153, 0.186);
+        }
+        .content div:hover {
+            transform: scale(1.02);
+        }
+        input:-webkit-autofill,
+      input:-webkit-autofill:hover, 
+      input:-webkit-autofill:focus, 
+      input:-webkit-autofill:active{
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: #ffffff;
+          transition: background-color 5000s ease-in-out 0s;
+          box-shadow: inset 0 0 20px 20px #23232329;
+      }
     </style>
     
 </head>
@@ -30,7 +76,7 @@
     <header class="header">
 
         <div class="navbar">
-          <a href="/home">Home</a>
+          <a href="/">Home</a>
           <a href="/product-list/list">Products</a>
         </div>
         <div class="search-bar-container">
@@ -51,50 +97,211 @@
 
     <div class="container px-4 py-5  con" id="featured-3">
         <h2 class="pb-1 border-bottom" style="color: white;">Order Summary</h2>
+        <h3 style="color: white;">orderId: <%= order.orderId %></h3>
+        <% if(order.items[0].status=="payment pending" && order.paymentMethod=="paypal"){ %>
+          <a href="/user/paypal?orderId=<%= order._id %>" class="btn btn-info">Retry Payment</a>
+          <% }else if(order.items[0].status=="payment pending" && order.paymentMethod=="razorpay"){ %>
+           <button class="btn btn-info" onclick="razorPay('<%= order._id %>')">Retry Payment</button>
+          <%}else{ %>
+        <a href="/user/invoice/<%= order._id %>" class="btn btn-info mt-3">Download Invoice</a>
+        <% } %>
         <div class="row g-4 py-5 ">
-            <h3 style="color: white;">orderId: <%= order.orderId %></h3>
+
+          <div class="container content py-1">
+
+            <div class="row mb-3">
+              
+              <h5 style="color: white;">Delivery Address</h5>
+              <br>
+              <p style="margin: 0;"> <span style="font-weight: 600;"><%= order.address.name %></span> </br> </br> <%= order.address.address %>,<%= order.address.locality %>,<%= order.address.city %>,<%= order.address.state %>-<%= order.address.pincode %></p>
+              <p style="margin: 0;">Phone number: <%= order.address.phoneNo %></p>
+  
+            </div>
+            <div class="row">
+              <p style="margin: 0;">Payment Method: <%= order.paymentMethod %></p>
+              <p style="margin: 0;">Order Date: <%= order.orderDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) %></p>
+              <% if(order.coupon.discount){ %>
+              <p style="margin: 0;">Coupons Applied: <%= order.coupon.couponCode %></p>
+              <p style="margin: 0;">Coupons Discount: <%= order.coupon.discount %>%</p>
+              <% } %>
+              <p style="margin: 0;">Total Quantity: <%= order.totalQuantity %></p>
+              <p style="margin: 0;">Total Price: $<%= order.totalPrice %></p>
+              
+            </div>
+
+          </div>
+
+      </div>
+        <div class="row g-4 py-5 outerdiv">
             <% order.items.forEach(product => { %>
-                
-                <div class="feature bg-secondary rounded">
-                  <div class="feature-icon d-inline-flex align-items-center justify-content-center   fs-2 mb-3 py-2">
-                    <img src="<%= product.productImage[0] %>" style="width: 10rem; height: 10rem;" alt="productImage">
-                  </div>
-                  <h3 class="fs-2 text-body-emphasis"><%= product.productName %></h3>
-                  <p>$<%= product.price %></p>
-                  <p><%= product.productDescription %></p>
+
+              <div class="card" style="width: 18rem; background: none;">
+                <img class="card-img-top" style="height: 25rem;width: 16rem;" src="<%= product.productImage[0] %>" alt="productImage">
+                <div class="card-body" style="text-align: center;">
+                  <h5 class="card-title" style="color: white;"><%= product.productName %></h5>
+                  <p class="card-text">Price: $<%= product.discountPrice %></p>
+                  <p class="card-text">Quantity: <%= product.quantity %></p>
+                  <p class="card-text">status: <%= product.status %></p>
+                  <% if(product.reason){ %>
+                    <p style="color: green;">Order <%= product.status %></p>
+                    <% }else{%>
+                  <% if(product.status==="delivered"){ %>
+                    <button class="btn btn-primary" onclick="returnCancel(true,'<%= product.productId %>','<%= order._id %>')">Return</button>
+                  <% }else if(product.status=="shipped"||product.status=="pending"){ %>
+                    <button class="btn btn-danger" onclick="returnCancel(false,'<%= product.productId %>','<%= order._id %>')">Cancel Order</button>
+                    <% } %>
+                    <% }%>
                 </div>
+              </div>
+                
             <% }); %>
 
         </div>
     </div>
 
-
-
-  <script>
-    const body = document.querySelector('body'),
-      sidebar = body.querySelector('nav'),
-      toggle = body.querySelector(".toggle"),
-      searchBtn = body.querySelector(".search-box"),
-      modeSwitch = body.querySelector(".toggle-switch"),
-      modeText = body.querySelector(".mode-text");
-    toggle.addEventListener("click", () => {
-      sidebar.classList.toggle("close");
-    })
-    searchBtn.addEventListener("click", () => {
-      sidebar.classList.remove("close");
-    })
-    modeSwitch.addEventListener("click", () => {
-      body.classList.toggle("dark");
-      if (body.classList.contains("dark")) {
-        modeText.innerText = "Light mode";
-      } else {
-        modeText.innerText = "Dark mode";
-      }
-    });
-  </script>
-
+<!-- Sweet Alert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>  
 <!-- Bootsrtap script -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<!-- Razorpay -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <script>
+      function returnCancel(action,productId,orderId){
+
+        Swal.fire({
+        title: "Enter The Reason",
+        input: "text",
+        inputAttributes: {
+          autocapitalize: "off"
+        },
+        showCancelButton: true,
+        confirmButtonText: "Confirm",
+        showLoaderOnConfirm: true,
+        preConfirm: async (reason) => {
+          try {
+            const response = await fetch("/user/orderStatus/"+orderId,{
+                method:"PUT",
+                headers:{
+                  "Content-Type":"application/json"
+                },
+                body:JSON.stringify({action:action,productId:productId,reason:reason})
+              });
+            if (!response.ok) {
+              return Swal.showValidationMessage(`
+                ${JSON.stringify(await response.json())}
+              `);
+            }
+            return response.json();
+          } catch (error) {
+            Swal.showValidationMessage(`
+              Request failed: ${error}
+            `);
+          }
+        },
+        allowOutsideClick: () => !Swal.isLoading()
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire({
+            title: "Success",
+            text: "The action was completed successfully.",
+            icon: "success",
+            confirmButtonText: "OK",
+            allowOutsideClick: false
+          }).then(() => {
+        location.reload(); // Refresh the page when the OK button is clicked
+      });
+        }
+      });
+
+      }
+      /* Razorpay Begin */
+      function razorPay(orderId){
+
+        fetch(`/user/razorpay-createOrder?orderId=${orderId}`,{
+          method:"POST",
+          headers:{
+            "Content-Type":"application/json"
+          }
+      })
+      .then((response)=>response.json())
+      .then(data=>{
+        var options = {
+          "key": "rzp_test_zuuyQNQOwzCbtw", // Enter the Key ID generated from the Dashboard
+          "amount": data.orderprice, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+          "currency": "INR",
+          "name": "Alchemy",
+          "description": "Online Payment",
+          "order_id": data.orderId, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+          "handler": function (response){
+
+              fetch(`/user/razorpay-success?orderId=${orderId}`,{
+                method:"POST",
+                headers:{
+                  "Content-Type":"application/json"
+                }
+              })
+              .then((response)=>{
+            return response.json();
+          
+        })
+        .then((data)=>{
+          if(data.error){
+            return Swal.fire(data.error);
+          }
+          Swal.fire({
+              title: 'Order Placed',
+              text: 'Your Order has been placed.',
+              icon: 'success',
+              showCancelButton: true,
+              cancelButtonText: 'Continue Browsing',
+              showConfirmButton: true,
+              confirmButtonText: 'Go To Your Order',
+              allowOutsideClick: false
+              }).then((result) => {
+                  if (result.isConfirmed) {
+                      window.location.href = '/user/orderDetails/'+data.id;
+                  }else{
+                    window.location.href = '/product-list/list';
+                  }
+              });
+        })
+        .catch((err)=>{
+          Swal.fire("Some Error Occured.");
+        })
+          }
+      };
+
+      var rzp1 = new Razorpay(options);
+
+      rzp1.on('payment.failed', function (response){
+
+        fetch(`/user/razorpay-failure?orderId=${orderId}`,{
+          method:"POST",
+          headers:{
+            "Content-Type":"application/json"
+          }
+      })
+      .then((response)=>{
+        if(response.ok){
+          return response.json();
+        }else{
+          throw new Error("Something Happened")
+        }
+      })
+      .then((data)=>window.location.href=`/user/orderDetails/${data.id}`)
+      .catch((err)=>console.log(err.message))
+
+      });
+
+      rzp1.open();
+      })
+
+      }
+      /* Razorpay End */
+    </script>
+
+
 </body>
 
 </html>

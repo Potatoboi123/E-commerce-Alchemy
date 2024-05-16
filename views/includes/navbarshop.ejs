@@ -1,0 +1,25 @@
+
+<header class="header">
+
+    <nav class="navbar">
+      <a href="/">Home</a>
+      <a href="/product-list/list">Products</a>
+    </nav>
+    <div class="search-bar-container">
+      <form action="/product-list/search" method="get" class="search-bar">
+        <input type="text" placeholder="Search..." name="search" id="search">
+        <button type="submit"><box-icon name='search'><i class='bx bx-search'></i></button>
+      </form>
+    <div class="right_navbar">
+      <a href="/user/wishlist"><i class='bx bx-heart'></i></a>
+      <a href="/user/cart"><i class='bx bx-cart'></i></a>
+      <a href="/user/profile"><i class='bx bx-user'></i></a>
+      <% if(userName){ %>
+      <form action="/user/logout" method="post"><button type="submit" class="login_navbar">Logout</button></form>
+      <% }else{ %>
+        <a href="/user/login" class="login_navbar">Login</a>
+        <% } %>
+    </div>
+    </div>
+    
+</header>

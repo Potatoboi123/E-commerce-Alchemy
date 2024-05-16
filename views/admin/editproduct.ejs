@@ -13,120 +13,55 @@
     <!----===== Boxicons CSS ===== -->
     <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
 
+    <!-- Cropper.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+
     <style>
+      .highlight {
+        background-color: #695cfe;
+        border-radius: 6px;
+      }
+      .highlight a i,
+      .highlight a span {
+        color: white !important;
+      }
       .preview-item {
-      display: inline-block;
-      margin: 10px;
-    }
-
-    .preview-image {
-      width: 100px;
-      height: auto;
-    }
-
-    .delete-button {
-      display: block;
-      margin-top: 5px;
-    }
+        display: inline-block;
+        margin: 10px;
+      }
+      .preview-image {
+        width: 100px;
+        height: auto;
+        cursor: pointer; /* Add cursor pointer to indicate it's clickable */
+      }
+      .delete-button {
+        display: block;
+        margin-top: 5px;
+      }
+      .img-container {
+        width: 100%;
+        max-width: 900px; /* Increase the maximum width */
+        height: 600px; /* Set a fixed height */
+        margin: 20px auto;
+      }
+      .modal-body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      #imageToCrop {
+        max-width: 100%; /* Make the image fill the container */
+        max-height: 100%; /* Make the image fill the container */
+      }
+      .cropper-crop-box, .cropper-view-box {
+        height: 100%; /* Ensure the cropping area is full height */
+      }
     </style>
+    
 </head>
 <body>
 
-    <nav class="sidebar close">
-        <header>
-          <div class="image-text">
-            <span class="image">
-              <img src="" alt=""> <!-- DOUBT LOGO.PNG -->
-            </span>
-    
-            <div class="text logo-text">
-              <span class="name">Admin</span>
-              <span class="profession">Web developer</span>
-            </div>
-          </div>
-    
-          <i class='bx bx-chevron-right toggle'></i>
-        </header>
-    
-        <div class="menu-bar">
-          <div class="menu">
-    
-            <li class="search-box">
-              <i class='bx bx-search icon'></i>
-              <input type="text" placeholder="Search Ganes...">
-            </li>
-    
-            <ul class="menu-links">
-              <li class="nav-link">
-                <a href="/admin/dashboard">
-                  <i class='bx bx-home-alt icon'></i>
-                  <span class="text nav-text">Dashboard</span>
-                </a>
-              </li>
-    
-              <li class="nav-link">
-                <a href="/admin/user">
-                  <i class='bx bx-user icon'></i>
-                  <span class="text nav-text">User</span>
-                </a>
-              </li>
-    
-              <li class="nav-link">
-                <a href="/admin/category">
-                  <i class='bx bxs-category icon'></i>
-                  <span class="text nav-text">Category</span>
-                </a>
-              </li>
-    
-              <li class="nav-link">
-                <a href="/admin/product">
-                  <i class='bx bx-pie-chart-alt icon'></i>
-                  <span class="text nav-text">Product</span>
-                </a>
-              </li>
-    
-              <li class="nav-link">
-                <a href="/admin/order">
-                  <i class='bx bx-heart icon'></i>
-                  <span class="text nav-text">Order</span>
-                </a>
-              </li>
-    
-              <li class="nav-link">
-                <a href="/admin/banner">
-                  <i class='bx bx-wallet icon'></i>
-                  <span class="text nav-text">Banner</span>
-                </a>
-              </li>
-    
-            </ul>
-          </div>
-    
-          <div class="bottom-content">
-            <li class="">
-              <form action="/admin/logout" method="post">
-                  <button>
-                    <i class='bx bx-log-out icon'></i>
-                  <span class="text nav-text">Logout</span>
-                </button>  
-              </form>
-    
-            <li class="mode">
-              <div class="sun-moon">
-                <i class='bx bx-moon icon moon'></i>
-                <i class='bx bx-sun icon sun'></i>
-              </div>
-              <span class="mode-text text">Dark mode</span>
-    
-              <div class="toggle-switch">
-                <span class="switch"></span>
-              </div>
-            </li>
-    
-          </div>
-        </div>
-    
-      </nav>
+  <%- include('../includes/navigation.ejs') %>
     
       <section class="home">
         <div class="text">Edit Product</div>
@@ -144,10 +79,6 @@
               <label for="product_price">Price</label>
               <input type="number" class="form-control" id="product_price" placeholder="Enter the price of product" name="product_price" value="<%= product.price %>" required>
             </div>
-<!--             <div class="form-group">
-              <label for="product_discount">Discount</label>
-              <input type="number" class="form-control" id="product_discount" placeholder="Enter the discount" name="product_discount" value="<%= product.discount %>">
-            </div> -->
             <div class="form-group">
               <label for="exampleFormControlSelect1">Select Category</label>
               <select class="form-control" id="exampleFormControlSelect1" name="product_category">
@@ -158,6 +89,10 @@
                 <option><%=category.name %></option>
                 <% }}) %>
               </select>
+            </div>
+            <div class="form-group">
+              <label for="product_brand">Brand</label>
+              <input type="text" class="form-control" id="product_brand" placeholder="Enter Product Brand" name="product_brand" value="<%= product.brand %>" required>
             </div>
             <div class="form-group">
                 <label for="product_image">Image</label>
@@ -171,82 +106,160 @@
                  <button type="button" onclick="deleteImage(this)">delete</button>
                 </div>
                 
-            <% }) %>
-            </div>
-            <!-- IMAGE  PREVIEW BEGIN -->
-            <div id="previewContainer">
+                <% }) %>
+              </div>
+              <!-- IMAGE  PREVIEW BEGIN -->
+              <div id="previewContainer">
+                
+              </div>
+              <!-- IMAGE  PREVIEW END -->
               
-            </div>
-            <!-- IMAGE  PREVIEW END -->
-            
-            <div class="form-group">
+              <div class="form-group">
                 <label for="product_stock">Stock</label>
                 <input type="number" class="form-control" id="product_stock" placeholder="Enter Stock" name="product_stock" value="<%= product.stock %>" required>
-            </div>
-            <div class="form-group">
-              <label for="product_description">Description</label>
+              </div>
+              <div class="form-group">
+                <label for="product_description">Description</label>
               <textarea class="form-control" id="product_description" rows="3" name="product_description" required><%= product.description %></textarea>
             </div>
             <button class="btn btn-primary" type="submit">Submit</button>
           </form>
         </div>
-
+        
       </section>
 
-      <script>
+      <!-- Crop Modal-->
+      <div id="cropperModal" class="modal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Crop Image</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="img-container">
+                <img id="cropperImage" src="" alt="Image to crop">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-primary" id="cropButton">Crop</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+      <!-- Cropper.js JS -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 
+      <script>
+        
         setTimeout(()=>{
           document.getElementById("errormessage").innerHTML="";
         },8000)
-
-        /* Script For Deleting the Selected Images BEGIN  */
         
-        document.getElementById("product_image").addEventListener('change', function(event) {
-        const files = event.target.files; // Get the selected files
+    /* Script For Deleting and Cropping the Selected Images BEGIN  */
         
+        let cropper;
+        let currentPreviewImage;
+        let currentFileIndex;
         const previewContainer = document.getElementById('previewContainer');
-        previewContainer.innerHTML = ''; // Clear previous previews
-        
-        // Loop through each selected file
-        for (let i = 0; i < files.length; i++) {
-          const file = files[i];
-          const reader = new FileReader(); // Create a FileReader object
-          
-          reader.onload = function(e) {
-            // Create preview elements
-            const previewElement = document.createElement('div');
-            previewElement.classList.add('preview-item');
-            
-            const imageElement = document.createElement('img');
-            imageElement.classList.add('preview-image');
-            imageElement.src = e.target.result;
-            previewElement.appendChild(imageElement);
-            
-            const deleteButton = document.createElement('button');
-            deleteButton.classList.add('delete-button');
-            deleteButton.textContent = 'Delete';
-            deleteButton.addEventListener('click', function() {
-              previewContainer.removeChild(previewElement); // Remove preview when delete button is clicked
-              // Remove the corresponding file from the input's selection
-              const fileInput = document.getElementById('product_image');
-              const newFiles = Array.from(fileInput.files).filter(f => f !== file); // Filter out the deleted file
-              fileInput.value = ''; // Clear the input value
-              const newFileList = new DataTransfer(); // Create a new DataTransfer object
-              newFiles.forEach(f => newFileList.items.add(f)); // Add the remaining files to the new DataTransfer object
-              fileInput.files = newFileList.files; // Assign the new DataTransfer object back to the file input
-            });
-            previewElement.appendChild(deleteButton);
-            
-            // Append preview to container
-            previewContainer.appendChild(previewElement);
-          };
-          
-          // Read the selected file as a data URL
-          reader.readAsDataURL(file);
-        }
+        const cropperModal = new bootstrap.Modal(document.getElementById('cropperModal'), {
+          backdrop: 'static',
+          keyboard: false
+        });
+        const cropperImage = document.getElementById('cropperImage');
+        const cropButton = document.getElementById('cropButton');
 
-        /* Script For Deleting the Selected Images END  */
-        })
+    document.getElementById("product_image").addEventListener('change', function(event) {
+      const files = event.target.files;
+      const previewContainer = document.getElementById('previewContainer');
+      previewContainer.innerHTML = '';
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+          const previewElement = document.createElement('div');
+          previewElement.classList.add('preview-item');
+
+          const imageElement = document.createElement('img');
+          imageElement.classList.add('preview-image');
+          imageElement.src = e.target.result;
+          previewElement.appendChild(imageElement);
+
+          const deleteButton = document.createElement('button');
+          deleteButton.classList.add('delete-button');
+          deleteButton.textContent = 'Delete';
+          deleteButton.addEventListener('click', function() {
+
+            previewContainer.removeChild(previewElement);
+            const fileInput = document.getElementById('product_image');
+            const newFiles = Array.from(fileInput.files).filter(f => f !== file);
+            fileInput.value = '';
+            const newFileList = new DataTransfer();
+            newFiles.forEach(f => newFileList.items.add(f));
+            fileInput.files = newFileList.files;
+          });
+          previewElement.appendChild(deleteButton);
+
+          previewContainer.appendChild(previewElement);
+
+              // Add event listener to open Cropper.js when clicking on the image
+              imageElement.addEventListener('click', function() {
+                if (cropper) {
+                  cropper.destroy();
+                }
+                cropperImage.src = e.target.result;
+                currentPreviewImage = imageElement;
+                currentFileIndex = i; // Track the index of the current file being cropped
+                cropper = new Cropper(cropperImage, {   
+                  viewMode: 1,
+                  responsive: true,
+                  movable: true, // Enable moving
+                  scalable: true, // Enable scaling
+                  zoomable: true, // Enable zooming
+                  rotatable: true, // Enable rotation
+                  responsive: true, // Adjust to window size
+                });
+                cropperModal.show();
+              });
+        };
+
+        reader.readAsDataURL(file);
+      }
+    });
+
+    cropButton.addEventListener('click', function() {
+
+      const canvas = cropper.getCroppedCanvas();
+      canvas.toBlob(function(blob) {
+        const url = URL.createObjectURL(blob);
+
+        // Update the preview image
+        currentPreviewImage.src = url;
+        // Update the file input
+        const fileInput = document.getElementById('product_image');
+        const dataTransfer = new DataTransfer();
+        Array.from(fileInput.files).forEach((file, index) => {
+            if (index === currentFileIndex) {
+              dataTransfer.items.add(new File([blob], file.name, {type: 'image/jpeg'}));
+            } else {
+              dataTransfer.items.add(file);
+            }
+          });
+        fileInput.files = dataTransfer.files;
+        
+        cropper.destroy();
+        cropperModal.hide();
+      }, 'image/jpeg');
+});
+
+        /* Script For Deleting and Cropping the Selected Images END  */
 
         /* Delete Image Preview Already Existing BEGIN  */
         function deleteImage(btn){
@@ -279,7 +292,6 @@
         });
       </script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     
 </body>
 </html>

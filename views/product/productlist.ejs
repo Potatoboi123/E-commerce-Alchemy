@@ -20,6 +20,10 @@
     <link rel="stylesheet" href="/css/product/productlist/flaticon.css">
     <link rel="stylesheet" href="/css/product/productlist/style.css">
 
+    <!-- Bootstrap link -->
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
     <!-- Boxicon-icons  -->
 
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
@@ -61,37 +65,46 @@
       color: #b7472a;
       font-size: 25px;
     }
+    a{
+      text-decoration: none;
+    }
+    .bx .bx-heart {
+    color: rgb(206, 19, 19); /* Change color to red */
+}
+.toast-body i{
+  font-size: 20px;
+  color: black;
+  background-color: green;
+  border-radius: 50%;
+}
+.category-list{
+  background-color: black;
+  color: white;
+}
+.category-list li{
+  border: none;
+}
+input:-webkit-autofill,
+      input:-webkit-autofill:hover, 
+      input:-webkit-autofill:focus, 
+      input:-webkit-autofill:active{
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: #ffffff;
+          transition: background-color 5000s ease-in-out 0s;
+          box-shadow: inset 0 0 20px 20px #23232329;
+      }
     </style>
   </head>
   <body>
 
-    <header class="header">
-
-        <nav class="navbar">
-          <a href="/home">Home</a>
-          <a href="/product-list/list">Products</a>
-        </nav>
-        <div class="search-bar-container">
-          <form action="/product-list/search" method="get" class="search-bar">
-          <input type="text" placeholder="Search..." name="search" id="search">
-          <button type="submit"><box-icon name='search'><i class='bx bx-search'></i></button>
-        </form>
-        <div class="right_navbar">
-          <a href="/user/wishlist"><i class='bx bx-heart'></i></a>
-          <a href="/user/cart"><i class='bx bx-cart'></i></a>
-          <a href="/user/profile"><i class='bx bx-user'></i></a>
-          <form action="/user/logout" method="post" ><button type="submit" class="login_navbar">Logout</button></form>
-        </div>
-        </div>
-        
-    </header>
+    <%- include('../includes/navbarshop.ejs') %>
     
     <section class="hero-wrap hero-wrap-2" style="background-image: url('/images/product/bg_2.jpg');" data-stellar-background-ratio="0.5">
       <div class="overlay"></div>
       <div class="container">
         <div class="row no-gutters slider-text align-items-end justify-content-center">
           <div class="col-md-9 ftco-animate mb-5 text-center">
-          	<p class="breadcrumbs mb-0"><span class="mr-2"><a href="/home">Home <i class="fa fa-chevron-right"></i></a></span> <span>Products <i class="fa fa-chevron-right"></i></span></p>
+          	<p class="breadcrumbs mb-0"><span class="mr-2"><a href="/">Home <i class="fa fa-chevron-right"></i></a></span> <span>Products <i class="fa fa-chevron-right"></i></span></p>
             <h2 class="mb-0 bread">Products</h2>
           </div>
         </div>
@@ -99,13 +112,13 @@
     </section>
 
     <section class="ftco-section">
+      <% if(products.length>0) {%>
 			<div class="container">
 				<div class="row">
 					<div class="col-md-9">
 						<div class="row mb-4">
 							
 						</div>
-            <% if(products.length>0) {%>
 						<div class="row">
                       <% products.forEach((product)=> {%>
 							<div class="col-md-4 d-flex">
@@ -113,8 +126,13 @@
 									<div class="img d-flex align-items-center justify-content-center" style="background-image: url('<%= product.image[0] %>');">
 										<div class="desc">
 											<p class="meta-prod d-flex">
+                        <% if(userName){ %>
 												<button class="d-flex align-items-center justify-content-center" type="button" onclick="addToCart(`<%=product._id %>`)"><i class='bx bx-cart'></i></button>
-												<a href="#" class="d-flex align-items-center justify-content-center"><i class='bx bx-heart'></i></a>
+												<button class="d-flex align-items-center justify-content-center" type="button" onclick="addToWishlist(`<%=product._id %>`,this)"><% if(wishlist.items.includes(product._id)){ %><i class='bx bxs-heart'></i> <% }else{ %><i class='bx bx-heart red'></i> <% } %></button>
+                        <% }else{ %>
+                          <a href="/user/login" class="d-flex align-items-center justify-content-center"><i class='bx bx-cart'></i></a>
+                          <a href="/user/login" class="d-flex align-items-center justify-content-center"><i class='bx bx-heart red'></i></a>
+                          <% } %>
 												<a href="/product-details/<%=product._id %>" class="d-flex align-items-center justify-content-center"><i class='bx bx-info-circle'></i></a>
 											</p>
 										</div>
@@ -123,7 +141,15 @@
 										<span class="sale">Sale</span>
 										<span class="category"><%= product.category.name %></span>
 										<h2 style="color: white;"><%= product.name %></h2>
-										<p class="mb-0"><span class="price price-sale" ><% if(product.stock==0){ %>Out Of Stock <% }else{ %><%= product.price %> <% } %></span> <span class="price" style="color:white;"><% if(product.stock>0){ %> $49.00 <% } %> </span></p>
+                    <% if(product.stock<=0){ %>
+										<p class="mb-0"><span class="price price-sale" > </span> <span class="price" style="color:rgb(255, 0, 0); font-weight: 600;">Out Of Stock</span></p>
+                    <% }else{ %>
+                      <% if(product.discountPrice!=product.price){ %>
+										<p class="mb-0"><span class="price price-sale" >₹<%= product.price %> </span> <span class="price" style="color:white;"> ₹<%= product.discountPrice %> </span></p>
+                    <% }else{ %>
+                    <p class="mb-0"><span class="price price-sale" ></span> <span class="price" style="color:white;"> ₹<%= product.price %> </span></p>
+                      <% } %>
+                      <% } %>
 									</div>
 								</div>
 							</div>
@@ -136,18 +162,18 @@
 		              <ul>
 		                
                     <% if(currentPage!==1 && previousPage!=1){ %>
-		                <li><a href="/product-list/<%= action %>?<% if(search){%>search=<%= search %>&<%} %>page=1 ">1</a></li>
+		                <li><a href="/product-list/<%= action %>?<% if (category && search) { %> category=<%= category %>&search=<%= search %>&<% }else if(category){ %>category=<%= category %>&<% }else if(search){ %>search=<%= search %>&<% } %>page=1 ">1</a></li>
                       <% } %>
                       <% if(hasPreviousPage){ %>
-		                <li><a href="/product-list/<%= action %>?<% if(search){%>search=<%= search %>&<%} %>page=<%= previousPage %> "><%= previousPage %></a></li>
+		                <li><a href="/product-list/<%= action %>?<% if (category && search) { %> category=<%= category %>&search=<%= search %>&<% }else if(category){ %>category=<%= category %>&<% }else if(search){ %>search=<%= search %>&<% } %>page=<%= previousPage %> "><%= previousPage %></a></li>
                       <% } %>
-                    <li class="active"><a href="/product-list/<%= action %>?<% if(search){%>search=<%= search %>&<%} %>page=<%= currentPage %>"><%= currentPage %></a></li>
+                    <li class="active"><a href="/product-list/<%= action %>?<% if (category && search) { %> category=<%= category %>&search=<%= search %>&<% }else if(category){ %>category=<%= category %>&<% }else if(search){ %>search=<%= search %>&<% } %>page=<%= currentPage %>"><%= currentPage %></a></li>
                     
 		                <% if(hasNextPage){ %>
-		                <li><a href="/product-list/<%= action %>?<% if(search){%>search=<%= search %>&<%} %>page=<%= nextPage %>"><%= nextPage %></a></li>
+		                <li><a href="/product-list/<%= action %>?<% if (category && search) { %> category=<%= category %>&search=<%= search %>&<% }else if(category){ %>category=<%= category %>&<% }else if(search){ %>search=<%= search %>&<% } %>page=<%= nextPage %>"><%= nextPage %></a></li>
                       <% } %>
                     <% if(lastPage!==currentPage && nextPage!==lastPage){ %>
-                      <li><a href="/product-list/<%= action %>?<% if(search){%>search=<%= search %>&<%} %>page=<%= lastPage %>"><%= lastPage %></a></li>
+                      <li><a href="/product-list/<%= action %>?<% if (category && search) { %> category=<%= category %>&search=<%= search %>&<% }else if(category){ %>category=<%= category %>&<% }else if(search){ %>search=<%= search %>&<% } %>page=<%= lastPage %>"><%= lastPage %></a></li>
                       <% } %>
 		              </ul>
 		            </div>
@@ -160,30 +186,92 @@
               <div class="categories">
                 <h3 style="color: white;">Filter</h3>
                 <ul class="p-0">
-                	<li><a href="/product-list/lowToHigh<% if(search){%>?search=<%= search %><%}%>" >Price:low to high <span class="fa fa-chevron-right"></span></a></li>
-	                <li><a href="/product-list/highToLow<% if(search){%>?search=<%= search %><%}%>">Price:high to low <span class="fa fa-chevron-right"></span></a></li>
-	                <li><a href="#">Popularity <span class="fa fa-chevron-right"></span></a></li>
-	                <li><a href="#">Featured <span class="fa fa-chevron-right"></span></a></li>
-	                <li><a href="/product-list/newArrivals<% if(search){%>?search=<%= search %><%}%>">New Arrivals <span class="fa fa-chevron-right"></span></a></li>
-	                <li><a href="/product-list/aA-Zz<% if(search){%>?search=<%= search %><%}%>">aA-Zz <span class="fa fa-chevron-right"></span></a></li>
-	                <li><a href="/product-list/Zz-aA<% if(search){%>?search=<%= search %><%}%>">Zz-aA <span class="fa fa-chevron-right"></span></a></li>
+                  <p style="color: white;">CATEGORIES</p>
+
+                  <div class="dropdown">
+                    <button class="btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-display="static">
+                      <% if (category) { %>
+                        <%= categories.find(cat => cat._id.toString() === category.toString()).name %>
+                    <% } else { %>
+                        Select category
+                    <% } %>
+                    </button>
+                    <ul class="dropdown-menu category-list">
+                      <% categories.forEach(cat => { %>
+                        <% if (cat._id.toString() === category) { %>
+                            <li><span class="dropdown-item-text" style="color: grey;"><%= cat.name %></span></li>
+                        <% } else { %>
+                            <li><a class="dropdown-item" href="/product-list/list?category=<%= cat._id %><% if(search){ %>&search=<%= search %><% } %>"><%= cat.name %></a></li>
+                        <% } %>
+                    <% }) %>
+                    </ul>
+                  </div>
+
+                	<li><a href="/product-list/lowToHigh<% if (category || search) { %>?<% } %><% if (category) { %>category=<%= category %><% } %><% if (category && search) { %>&<% } %><% if (search) { %>search=<%= search %><% } %>" >Price:low to high <span class="fa fa-chevron-right"></span></a></li>
+	                <li><a href="/product-list/highToLow<% if (category || search) { %>?<% } %><% if (category) { %>category=<%= category %><% } %><% if (category && search) { %>&<% } %><% if (search) { %>search=<%= search %><% } %>">Price:high to low <span class="fa fa-chevron-right"></span></a></li>
+	                <li><a href="/product-list/newArrivals<% if (category || search) { %>?<% } %><% if (category) { %>category=<%= category %><% } %><% if (category && search) { %>&<% } %><% if (search) { %>search=<%= search %><% } %>">New Arrivals <span class="fa fa-chevron-right"></span></a></li>
+	                <li><a href="/product-list/aA-Zz<% if (category || search) { %>?<% } %><% if (category) { %>category=<%= category %><% } %><% if (category && search) { %>&<% } %><% if (search) { %>search=<%= search %><% } %>">aA-Zz <span class="fa fa-chevron-right"></span></a></li>
+	                <li><a href="/product-list/Zz-aA<% if (category || search) { %>?<% } %><% if (category) { %>category=<%= category %><% } %><% if (category && search) { %>&<% } %><% if (search) { %>search=<%= search %><% } %>">Zz-aA <span class="fa fa-chevron-right"></span></a></li>
+	                <li><a href="/product-list/stock<% if (category || search) { %>?<% } %><% if (category) { %>category=<%= category %><% } %><% if (category && search) { %>&<% } %><% if (search) { %>search=<%= search %><% } %>">Stock<span class="fa fa-chevron-right"></span></a></li>
                 </ul>
               </div>
             </div>
-            <% }else{ %>
-            <h2 style="text-align: center; color: white;">NO PRODUCTS</h2>
-            <% } %>
 					</div>
 				</div>
 			</div>
-		</section>
+      
+      <!-- TOAST MESSAGE FOR AddToWishlist BEGIN -->
+      
+      <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+          
+      <div class="toast-body d-flex justify-content-center align-items-center" style="background-color: rgb(255, 255, 255);  color: rgb(0, 0, 0);">
+        <i class='bx bx-check'></i><p style="padding: 0; margin: 0;">Added To your Wishlist. </p>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
 
-    
+  <!-- TOAST MESSAGE FOR AddToWishlist END -->
   
+  <% }else{ %>
+  <h2 style="text-align: center; color: white;">NO PRODUCTS</h2>
+  <% } %>
+</section>
+
+
+
   <!-- loader -->
   <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
 
+
+  
+  
+  
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>    
+  <script src="/js/product/productlist/jquery.min.js"></script>
+  <script src="/js/product/productlist/jquery-migrate-3.0.1.min.js"></script>
+  <script src="/js/product/productlist/popper.min.js"></script>
+  <script src="/js/product/productlist/bootstrap.min.js"></script>
+  <script src="/js/product/productlist/jquery.easing.1.3.js"></script>
+  <script src="/js/product/productlist/jquery.waypoints.min.js"></script>
+  <script src="/js/product/productlist/jquery.stellar.min.js"></script>
+  <script src="/js/product/productlist/owl.carousel.min.js"></script>
+  <script src="/js/product/productlist/jquery.magnific-popup.min.js"></script>
+  <script src="/js/product/productlist/jquery.animateNumber.min.js"></script>
+  <script src="/js/product/productlist/scrollax.min.js"></script>
+<!--   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script> -->
+<!--   <script src="/js/product/productlist/google-map.js"></script> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+  <script src="/js/product/productlist/main.js"></script>
+
+  <!-- Bootsrtap script -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    
   <script>
+
+    /* ADD TO CART BEGIN */
+
     function addToCart(id){
       fetch("/user/add_cart/"+id,{
         method:"POST",
@@ -218,34 +306,60 @@
               text: "The product is not in stock.",
               icon: "error"
             });
+          }else if(data.maxQuantity){
+            Swal.fire({
+              title: "Quantity Limit Reached",
+              text: "Maximum quantity Reached for this product.",
+              icon: "error"
+            });
           }else{
             throw new Error("Something Happened")
           }
         })
       .catch((err)=>{
-        console.log("Something Happened")
+        console.log(err.message)
       })
       
     }
+
+    /* ADD TO CART END */
+
+    /* ADD TO WISHLIST BEGIN */
+
+    function addToWishlist(id,btn){
+
+      fetch("/user/addWishlist/"+id,{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        }
+      })
+      .then((response)=>{
+        if(!response.ok){
+          throw new Error("Something Happened")
+        }
+          return response.json();
+        })
+        .then((data)=>{
+          const toastLiveExample = document.getElementById('liveToast')
+          const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
+          let element = btn.getElementsByTagName('i');
+          if(data.action){
+            element[0].className = 'bx bxs-heart';
+            document.querySelector(".toast-body p").innerHTML="Added To your Wishlist."
+            toastBootstrap.show();
+          }else{
+            element[0].className = 'bx bx-heart red';
+            document.querySelector(".toast-body p").innerHTML="Removed From your Wishlist."
+            toastBootstrap.show();
+          }
+        })
+      .catch((err)=>{
+        console.log("Something Happened")
+      })
+
+    }
+    /* ADD TO WISHLIST END */
   </script>
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>    
-
-  <script src="/js/product/productlist/jquery.min.js"></script>
-  <script src="/js/product/productlist/jquery-migrate-3.0.1.min.js"></script>
-  <script src="/js/product/productlist/popper.min.js"></script>
-  <script src="/js/product/productlist/bootstrap.min.js"></script>
-  <script src="/js/product/productlist/jquery.easing.1.3.js"></script>
-  <script src="/js/product/productlist/jquery.waypoints.min.js"></script>
-  <script src="/js/product/productlist/jquery.stellar.min.js"></script>
-  <script src="/js/product/productlist/owl.carousel.min.js"></script>
-  <script src="/js/product/productlist/jquery.magnific-popup.min.js"></script>
-  <script src="/js/product/productlist/jquery.animateNumber.min.js"></script>
-  <script src="/js/product/productlist/scrollax.min.js"></script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
-  <script src="/js/product/productlist/google-map.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
-  <script src="/js/product/productlist/main.js"></script>
-    
   </body>
 </html>

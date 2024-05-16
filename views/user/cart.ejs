@@ -27,37 +27,37 @@
     <style>
       /* Loader Begin */
 
-.overlay{
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    backdrop-filter: blur(5px);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-}
-.loader {
-    width: 48px;
-    height: 48px;
-    border: 5px solid #FFF;
-    border-bottom-color: #FF3D00;
-    border-radius: 50%;
-    display: inline-block;
-    box-sizing: border-box;
-    animation: rotation 1s linear infinite;
+    .overlay{
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        backdrop-filter: blur(5px);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
     }
+    .loader {
+        width: 48px;
+        height: 48px;
+        border: 5px solid #FFF;
+        border-bottom-color: #FF3D00;
+        border-radius: 50%;
+        display: inline-block;
+        box-sizing: border-box;
+        animation: rotation 1s linear infinite;
+        }
 
-    @keyframes rotation {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
-    } 
+        @keyframes rotation {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+        } 
     
 
   /* Loader End */
@@ -93,6 +93,15 @@
           height: 30px;
           width: 20px;
         }
+        input:-webkit-autofill,
+      input:-webkit-autofill:hover, 
+      input:-webkit-autofill:focus, 
+      input:-webkit-autofill:active{
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: #ffffff;
+          transition: background-color 5000s ease-in-out 0s;
+          box-shadow: inset 0 0 20px 20px #23232329;
+      }
     </style>
   </head>
   <body>
@@ -101,26 +110,7 @@
       <span class="loader"></span>
     </div>
 
-    <header class="header">
-
-        <nav class="navbar">
-          <a href="/home">Home</a>
-          <a href="/product-list/list">Products</a>
-        </nav>
-        <div class="search-bar-container">
-			<form action="/product-list/search" method="get" class="search-bar">
-				<input type="text" placeholder="Search..." name="search" id="search">
-				<button type="submit"><box-icon name='search'><i class='bx bx-search'></i></button>
-			</form>
-        <div class="right_navbar">
-          <a href="/user/wishlist"><i class='bx bx-heart'></i></a>
-          <a href="/user/cart"><i class='bx bx-cart'></i></a>
-          <a href="/user/profile"><i class='bx bx-user'></i></a>
-          <form action="/user/logout" method="post" ><button type="submit" class="login_navbar">Logout</button></form>
-        </div>
-        </div>
-        
-    </header>
+    <%- include('../includes/navbarshop.ejs') %>
 
     
     <section class="hero-wrap hero-wrap-2" style="background-image: url('/images/product/bg_2.jpg');" data-stellar-background-ratio="0.5">
@@ -128,7 +118,7 @@
       <div class="container">
         <div class="row no-gutters slider-text align-items-end justify-content-center">
           <div class="col-md-9 ftco-animate mb-5 text-center">
-            <p class="breadcrumbs mb-0"><span class="mr-2"><a href="/home">Home <i class="fa fa-chevron-right"></i></a></span> <span>Cart <i class="fa fa-chevron-right"></i></span></p>
+            <p class="breadcrumbs mb-0"><span class="mr-2"><a href="/">Home <i class="fa fa-chevron-right"></i></a></span> <span>Cart <i class="fa fa-chevron-right"></i></span></p>
             <h2 class="mb-0 bread" >My Cart</h2>
           </div>
         </div>
@@ -138,6 +128,10 @@
       <section class="ftco-section">
           <div class="container">
               <div class="row">
+                <% if(cart.items.length==0){ %>
+                  <h3 style="color: white;">Add Items to cart</h3>
+                  <% }else{ %>
+                    
                   <div class="table-wrap">
                           <table class="table">
                             <thead class="thead-primary">
@@ -171,16 +165,16 @@
                                       <span style="color: gray;"><%= item.product.category.name %></span>
                                     </div>
                                 </td>
-                                <td style="color: white;"><%= item.product.price %></td>
+                                <td style="color: white;">₹<%= item.product.discountPrice %></td>
                                 <td class="quantity">
                                   <div class="input-group">
-                                    <button class="add-sub" onclick="changeCart(this,false,'<%= item.product._id %>','<%= item.product.price %>')">-</button>
+                                    <button class="add-sub" onclick="changeCart(this,false,'<%= item.product._id %>','<%= item.product.discountPrice %>')">-</button>
                                     <input type="text" name="quantity" class="quantity form-control input-number" value="<%= item.quantity %>" max="100" disabled>
-                                    <button class="add-sub" onclick="changeCart(this,true,'<%= item.product._id %>','<%= item.product.price %>')">+</button>
+                                    <button class="add-sub" onclick="changeCart(this,true,'<%= item.product._id %>','<%= item.product.discountPrice %>')">+</button>
                                   </div>
                                 </td>
-                                <% let price =item.product.price*item.quantity %>
-                                <td style="color: white;" class="myCell"><%= price %></td>
+                                <% let price =(item.product.discountPrice*item.quantity).toFixed(2) %>
+                                <td style="color: white;" class="myCell">₹<%= price %></td>
                                 <td>
                                   <input type="hidden" value="<%=item.product._id %>" name="product_id">
                                   <button type="button" class="close" onclick="deleteCart(this)">
@@ -200,24 +194,25 @@
                           <h3 style="color: white;">Cart Totals</h3>
                           <p class="d-flex">
                               <span>Subtotal</span>
-                              <span class="totalPrice">$<%= totalPrice %></span>
+                              <span class="totalPrice">₹<%= cart.totalPrice %></span>
                           </p>
                           <p class="d-flex">
                               <span>Delivery</span>
-                              <span>$0.00</span>
+                              <span>₹0.00</span>
                           </p>
                           <p class="d-flex">
                               <span>Discount</span>
-                              <span>$0.00</span>
+                              <span>₹0.00</span>
                           </p>
                           <hr>
                           <p class="d-flex total-price">
                               <span>Total</span>
-                              <span style="color: white;" class="totalPrice">$<%= totalPrice %></span>
+                              <span style="color: white;" class="totalPrice">₹<%= cart.totalPrice %></span>
                           </p>
                       </div>
                       <p class="text-center"><a href="/user/checkout" class="btn btn-primary py-3 px-4">Proceed to Checkout</a></p>
                   </div>
+                  <% } %>
               </div>
           </div>
       </section>
@@ -237,8 +232,8 @@
   <script src="/js/user/cart/jquery.magnific-popup.min.js"></script>
   <script src="/js/user/cart/jquery.animateNumber.min.js"></script>
   <script src="/js/user/cart/scrollax.min.js"></script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
-  <script src="/js/google-map.js"></script>
+<!--   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
+  <script src="/js/google-map.js"></script> -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
   <script src="/js/user/cart/main.js"></script>
 
@@ -322,13 +317,19 @@
                   text: "Product cannot go negative",
                   icon: "error"
                 });
-              }
-              else if(action){
+              }else if(data.maxQuantity){
+                loader.style.display="none";
+                return Swal.fire({
+                  title: "Quantity Limit!",
+                  text: "Max Quantity is 3 Bottles",
+                  icon: "error"
+                });
+              }else if(action){
                 inputQuantity.value=+inputQuantity.value+1
-                updatedprice.textContent=+updatedprice.textContent+(+price)
+                updatedprice.textContent=(+updatedprice.textContent+(+price)).toFixed(2)
               }else{
                 inputQuantity.value=+inputQuantity.value-1
-                updatedprice.textContent=+updatedprice.textContent-(+price)
+                updatedprice.textContent=(+updatedprice.textContent-(+price)).toFixed(2)
               }
               const total=document.querySelectorAll(".totalPrice");
               total.forEach((price)=>{

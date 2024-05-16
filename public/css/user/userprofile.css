@@ -22,7 +22,7 @@ ul{
 }
 
 body{
-    background: #020410;
+    background: #1B2431;
 }
 
 img {
@@ -315,7 +315,7 @@ body.dark .sidebar header .toggle {
 }
 
 .sidebar li a:hover {
-  background-color: var(--primary-color);
+  background-color: #183D3D;
 }
 .sidebar li a:hover .icon,
 .sidebar li a:hover .text {
