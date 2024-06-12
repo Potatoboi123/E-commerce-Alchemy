@@ -62,8 +62,6 @@
                 <h3 class="t-op-nextlvl"><%= user.email %></h3> 
                 
                 <button class="btn btn<%= user._id %> <% if(user.isBlocked ){ %> btn-block <% }else{ %> btn-active <% }%>" onclick="status(`<%= user._id %>`)"><% if(user.isBlocked ){ %> Blocked <% }else{ %> Active <% }%></button> 
-
-                <!-- <h3 class="t-op-nextlvl label-tag">Published</h3>  -->
               </div> 
               <% }) %>
   

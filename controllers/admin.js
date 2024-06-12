@@ -621,7 +621,7 @@ exports.getSalesReportPdf=async (req,res,next)=>{
     try{
         let { startDate, endDate, filterOption } = req.query;
         let ordersQuery = {};
-        
+        let sum=0;
         if (startDate && endDate) {
             ordersQuery.orderDate = { 
                 $gte: new Date(startDate), 
@@ -695,7 +695,7 @@ exports.getSalesReportPdf=async (req,res,next)=>{
         doc.fontSize(15).text(`Overall Sales Count: ${totalCount}`);
         doc.moveDown();
 
-        doc.fontSize(15).text(`Overall Order Amount: $${totalAmount}`);
+        doc.fontSize(15).text(`Overall Order Amount: $${totalAmount.toFixed(2)}`);
         doc.moveDown();
 
         doc.fontSize(15).text(`Total Users: ${totalUser}`);
@@ -707,15 +707,31 @@ exports.getSalesReportPdf=async (req,res,next)=>{
                 'Order ID', 'Name', 'Products', 'Total Quantity', 'Total Price', 'Address', 'Payment Method', 'Order Date'
             ],
             rows: orders.map(order => {
-                const products = order.items.map(item => `${item.productName} - ${item.quantity}`).join(', ');
+                sum=0;
+                const products = order.items.map(item => {
+                    
+                    if(item.status==="cancelled"){
+                        return `${item.productName}(cancelled) - ${item.quantity}`
+                    }else if(item.status==="returned"){
+                        return `${item.productName}(returned) - ${item.quantity}`
+                    }else{
+                        sum+=item.discountPrice
+                        return `${item.productName} - ${item.quantity}`
+                    }
+                    
+                }).join(', ');
                 const address = `${order.address.name}, ${order.address.phoneNo}, ${order.address.address}, ${order.address.locality}, ${order.address.city}, ${order.address.state} - ${order.address.pincode}`;
-                
+                if(order.coupon.discount){
+                    sum=(sum*(1-order.coupon.discount/100)).toFixed(2);
+                }else{
+                    sum=sum.toFixed(2);
+                }
                 return [
                     order.orderId,
                     order.userId.name,
                     products,
                     order.totalQuantity,
-                    `$${order.totalPrice}`,
+                    `$${sum}`,
                     address,
                     order.paymentMethod,
                     order.orderDate.toISOString().split('T')[0] // Format as YYYY-MM-DD
@@ -854,6 +870,6 @@ exports.getSalesReportExcel=async (req,res,next)=>{
 
 }
 
-exports.getBanner=async (req,res,next)=>{
-    res.render("admin/banner",{current:"banner"})
+exports.getChat=async (req,res,next)=>{
+    res.render("admin/chat",{current:"chat"})
 }

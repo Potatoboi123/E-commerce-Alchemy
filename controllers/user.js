@@ -22,6 +22,7 @@ const PDFDocument = require('pdfkit');
 const Razorpay = require('razorpay');
 const { Console } = require("console");
 
+let timer;
 var instance = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
     key_secret: process.env.RAZORPAY_KEY_SECRET
@@ -133,7 +134,7 @@ exports.postSignup=async (req,res,next)=>{
                 await transporter.sendMail(value.info)
                 req.session.data={signup_name,signup_email,signup_password,signup_referral}
                 req.session.otp=value.token;
-                setTimeout(()=>{ 
+                timer=setTimeout(()=>{ 
                     delete req.session.otp;
                 },60000);
                 return res.status(200).json({message:"Verification Code Send"});  
@@ -155,12 +156,14 @@ exports.postOtp=async (req,res,next)=>{
         const value=otpgeneretor(req.session.data.signup_email)
         await transporter.sendMail(value.info)
         req.session.otp=value.token;
-        setTimeout(()=>{ delete req.session.otp},60000);
+        clearTimeout(timer);
+        timer=setTimeout(()=>{ delete req.session.otp},60000);
         return res.status(200).json({message:"Enter The New Code"}); 
     }
         if(!(otp===req.session.otp)){
                 return res.status(403).json({message:"Invalid Otp"})
             }
+        clearTimeout(timer);
         const {signup_name,signup_email,signup_password,signup_referral}=req.session.data
         const referralCode=crypto.randomBytes(3).toString('hex');
         const user=await User.signup(signup_name,signup_email,signup_password,signup_referral,referralCode)
@@ -202,7 +205,7 @@ exports.postForgotEmail=async (req,res,next)=>{
                 const value=otpgeneretor(email)
                 await transporter.sendMail(value.info)
                 req.session.otp=value.token;
-                setTimeout(()=>{req.session.otp=null},60000);
+                timer=setTimeout(()=>{req.session.otp=null},60000);
                 return res.status(200).json({message:"Success"});
             }else{
                 return res.status(404).json({error:"Email doesn't exist"})
@@ -217,6 +220,7 @@ exports.postForgotOtp=async(req,res,next)=>{
     const otp=req.body.otp;
     if(otp===req.session.otp){
         req.session.change=true;
+        clearTimeout(timer);
         return res.status(200).json({messsage:"Success"})
     }else{
         return res.status(404).json({error:"Wrong Otp"})
@@ -454,13 +458,13 @@ exports.putOrderStatus=async (req,res,next)=>{
                             description:`Cancellation refund for ${order.items[index].productName}`
                         })
                     }else{
-
                         user.wallet.balance+=order.items[index].discountPrice*order.items[index].quantity;
                         user.wallet.transactions.push({
-                            amount:order.items[index].order.items[index].quantity,
+                            amount:order.items[index].discountPrice,
                             description:`Cancellation refund for ${order.items[index].productName}`
                         })
                     }
+                    user.wallet.balance=Math.round((user.wallet.balance +Number.EPSILON)*100)/100
                     await user.save();
                 }
             }
@@ -477,7 +481,7 @@ exports.putOrderStatus=async (req,res,next)=>{
 
 exports.getInvoice=async (req,res,next)=>{
     try{
-
+        let sum=0;
         const orderId=req.params.orderId
         const order=await Order.findById(orderId)
         if(!order||order.userId.toString()!==req.session.user.toString()){
@@ -502,7 +506,7 @@ exports.getInvoice=async (req,res,next)=>{
         doc.fontSize(14).text('Order Details', { align: 'center' }).moveDown();
         doc.fontSize(12).text(`Order ID: ${order.orderId}`);
         doc.fontSize(12).text(`Total Quantity: ${order.totalQuantity}`);
-        doc.fontSize(12).text(`Total Price: $${order.totalPrice}`);
+        doc.fontSize(12).text(`Total Price: ₹${order.totalPrice}`);
         doc.fontSize(12).text(`Order Date: ${order.orderDate}`);
         doc.fontSize(12).text(`Payment Method: ${order.paymentMethod}`);
         doc.moveDown();
@@ -518,16 +522,20 @@ exports.getInvoice=async (req,res,next)=>{
         // Write product details to the PDF document
         doc.fontSize(14).text('Product Details', { align: 'center' }).moveDown();
         order.items.forEach(item => {
-
+            if(item.status!=="cancelled"&&item.status!=="returned"){
+                sum+=item.discountPrice;
+            }
             doc.fontSize(12).text(`Product Name: ${item.productName}`);
             doc.fontSize(12).text(`Quantity: ${item.quantity}`);
-            doc.fontSize(12).text(`Price: ${item.price}`);
+            doc.fontSize(12).text(`Price: ${item.discountPrice}`);
             doc.moveDown();
         });
-    
         // Add total price
         doc.moveDown();
-        doc.text(`Total Price: $${order.totalPrice}`, { align: 'right' });
+        if(order.coupon.discount){
+            sum=sum*(1-order.coupon.discount/100)
+        }
+        doc.text(`Total Price After Cancellation and/or Return: ₹${sum.toFixed(2)}`, { align: 'right' });
     
         doc.end();
     }catch(err){
@@ -755,7 +763,11 @@ exports.postCheckout=async (req,res,next)=>{
             const randomBytes = crypto.randomBytes(3).toString('hex');
             const orderId=randomBytes+Date.now().toString(36);
 
-            if(paymentMethod==="cashOnDelivery"){
+            if(paymentMethod==="paypal"){
+                return res.status(200).json({paymentMethod:"paypal"})
+            }else if(paymentMethod==="razorpay"){
+                return res.status(200).json({paymentMethod:"razorpay"})
+            }else if(paymentMethod==="cashOnDelivery"){
                 let order=new Order({
                     orderId:orderId,
                     userId:req.session.user,
@@ -831,7 +843,11 @@ exports.postCheckout=async (req,res,next)=>{
             cart.items.forEach((item)=>{
                 totalQuantity+=item.quantity;
             })
-            if(paymentMethod==="cashOnDelivery"){
+            if(paymentMethod==="paypal"){
+                return res.status(200).json({paymentMethod:"paypal"})
+            }else if(paymentMethod==="razorpay"){
+                return res.status(200).json({paymentMethod:"razorpay"})
+            }else if(paymentMethod==="cashOnDelivery"){
                 let order=new Order({
                     orderId:orderId,
                     userId:req.session.user,

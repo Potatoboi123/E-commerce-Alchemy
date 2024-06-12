@@ -7,7 +7,6 @@ module.exports={
         io=require("socket.io")(httpServer);
 
         io.on('connection', (socket) => {
-            console.log('a user connected');
             socket.on('disconnect', () => {
               console.log('user disconnected');
               delete users[socket.id]

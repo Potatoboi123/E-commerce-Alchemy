@@ -205,7 +205,7 @@
     <div class="container content py-5">
 
         <div>
-          <p>Current Wallet Balance : $<%= user.wallet.balance %></p>
+          <p>Current Wallet Balance : ₹<%= user.wallet.balance %></p>
           
         </div>
       
@@ -220,7 +220,7 @@
         <% user.wallet.transactions.slice().reverse().forEach((transaction=>{ %>
 
             <div class="row my-4 mx-4" style="border: 2px solid rgba(102, 51, 153, 0.384); background-color: rgba(102, 51, 153, 0.186); border-radius: 5px;">
-                <p style="margin-top: 5px;">Amount: $<%= transaction.amount %></p>
+                <p style="margin-top: 5px;">Amount: ₹<%= transaction.amount %></p>
                 <p>Description: <%= transaction.description %></p>
                 <p>Date: <%= transaction.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) %></p>
             </div>

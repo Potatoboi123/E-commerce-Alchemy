@@ -195,21 +195,24 @@
 
     <div class="container coupon-container py-5">
         <h2 style="color: white; text-align: center;">Available Coupons</h2>
+        <% if(coupons.length===0){ %>
+          <h3 style="color: white;">No coupons Available</h3>
+          <% }else{ %>
         <% coupons.forEach((coupon) => { %>
             <div class="row coupon-row m-5">
                 <div class="col-12">
                     <div class="d-flex justify-content-between">
                         <p>Coupon code: <%= coupon.couponCode %></p>
                         <p>Valid Till <%= coupon.expiryDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) %></p>
-
                     </div>
-                    <p>Get <%= coupon.discount %>% Off for purchases between: <%= coupon.minAmount %>$ - <%= coupon.maxAmount %>$</p>
+                    <p>Get <%= coupon.discount %>% Off for purchases between: ₹<%= coupon.minAmount %> - ₹<%= coupon.maxAmount %></p>
                 </div>
                 <div class="col-12 text-right">
                     <button type="button" class="copy-button" onclick="copy(this, '<%= coupon.couponCode %>')">Copy</button>
                 </div>
             </div>
         <% }) %>
+        <% } %>
     </div>
 
   </section>

@@ -48,7 +48,7 @@ router.get("/sales",isAuth.isAdmin,adminController.getSalesReport)
 router.get("/salesPdf",isAuth.isAdmin,adminController.getSalesReportPdf)
 router.get("/salesExcel",isAuth.isAdmin,adminController.getSalesReportExcel)
 
-/* Banner */
-router.get("/banner",isAuth.isAdmin,adminController.getBanner)
+/* Chat */
+router.get("/chat",isAuth.isAdmin,adminController.getChat)
 
 module.exports=router

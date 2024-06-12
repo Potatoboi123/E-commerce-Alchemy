@@ -357,75 +357,75 @@
 
       document.querySelectorAll('.text-danger').forEach(errorElement => {
       errorElement.textContent = '';
-    });
+      });
 
-    let isValid = true;
+      let isValid = true;
 
-    if (!json_form.name) {
-    document.getElementById('name-error').textContent = 'Name is required.';
-    isValid = false;
-  }
+      if (!json_form.name) {
+      document.getElementById('name-error').textContent = 'Name is required.';
+      isValid = false;
+      }
 
-  if (!json_form.phoneNo) {
-    document.getElementById('phoneNo-error').textContent = 'Phone number is required.';
-    isValid = false;
-  } else if (json_form.phoneNo.length !== 10 || isNaN(json_form.phoneNo)) {
-    document.getElementById('phoneNo-error').textContent = 'Phone number must be a 10-digit number.';
-    isValid = false;
-  }
+      if (!json_form.phoneNo) {
+        document.getElementById('phoneNo-error').textContent = 'Phone number is required.';
+        isValid = false;
+      } else if (json_form.phoneNo.length !== 10 || isNaN(json_form.phoneNo)) {
+        document.getElementById('phoneNo-error').textContent = 'Phone number must be a 10-digit number.';
+        isValid = false;
+      }
 
-  if (!json_form.pincode) {
-    document.getElementById('pincode-error').textContent = 'Pincode is required.';
-    isValid = false;
-  } else if (json_form.pincode.length !== 6 || isNaN(json_form.pincode)) {
-    document.getElementById('pincode-error').textContent = 'Enter Valid Pincode';
-    isValid = false;
-  }
+      if (!json_form.pincode) {
+        document.getElementById('pincode-error').textContent = 'Pincode is required.';
+        isValid = false;
+      } else if (json_form.pincode.length !== 6 || isNaN(json_form.pincode)) {
+        document.getElementById('pincode-error').textContent = 'Enter Valid Pincode';
+        isValid = false;
+      }
 
-  if (!json_form.locality) {
-    document.getElementById('locality-error').textContent = 'Locality is required.';
-    isValid = false;
-  }
+      if (!json_form.locality) {
+        document.getElementById('locality-error').textContent = 'Locality is required.';
+        isValid = false;
+      }
 
-  if (!json_form.address) {
-    document.getElementById('address-error').textContent = 'Address is required.';
-    isValid = false;
-  }
+      if (!json_form.address) {
+        document.getElementById('address-error').textContent = 'Address is required.';
+        isValid = false;
+      }
 
-  if (!json_form.city) {
-    document.getElementById('city-error').textContent = 'City/District/Town is required.';
-    isValid = false;
-  }
+      if (!json_form.city) {
+        document.getElementById('city-error').textContent = 'City/District/Town is required.';
+        isValid = false;
+      }
 
-  if (!json_form.state) {
-    document.getElementById('state-error').textContent = 'State is required.';
-    isValid = false;
-  }
+      if (!json_form.state) {
+        document.getElementById('state-error').textContent = 'State is required.';
+        isValid = false;
+      }
 
-    if (!isValid) {
-      return;
-    }
+      if (!isValid) {
+        return;
+      }
       /* Validation END */
-     fetch("/user/add_address",{
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json"
-        },
-        body:JSON.stringify(json_form)
-      })
-      .then((response)=>{
-        if(!response.ok){
-          return response.json()
-        }else{
-          window.location.href="/user/checkout";
-        }
-      })
-      .then((data)=>{
-        Swal.fire(data.message);
-      })
-      .catch((err)=>{
-        Swal.fire("Some Error Occured.");
-      })
+      fetch("/user/add_address",{
+          method:"POST",
+          headers:{
+            "Content-Type":"application/json"
+          },
+          body:JSON.stringify(json_form)
+        })
+        .then((response)=>{
+          if(!response.ok){
+            return response.json()
+          }else{
+            window.location.href="/user/checkout";
+          }
+        })
+        .then((data)=>{
+          Swal.fire(data.message);
+        })
+        .catch((err)=>{
+          Swal.fire("Some Error Occured.");
+        })
     }
 
     /* ADD Address END */
@@ -491,6 +491,7 @@
 
     /* Checkout BEGIN */
     function checkout(event,action){
+      loader.style.display="flex";
       event.preventDefault()
       const form_data=new FormData(event.target)
       let json_form={};
@@ -499,16 +500,38 @@
       })
       /* Validation BEGIN */
       
-      if(!json_form.address)
-      return Swal.fire("Add address")
+      if(!json_form.address){
+        return Swal.fire("Add address")
+        loader.style.display="none";
+      }
 
       /* Validation END */
       
       let orderId;
-      if(json_form.paymentMethod==="paypal"){
-        return window.location.href = `/user/paypal?action=${action}&address=${json_form.address}&coupon=${json_form.couponCode}`;
-      }else if(json_form.paymentMethod==="razorpay"){
-        fetch("/user/razorpay-createOrder",{
+        fetch("/user/checkout",{
+          method:"POST",
+          headers:{
+            "Content-Type":"application/json"
+          },
+          body:JSON.stringify({
+            json_form,
+            action
+        })
+        })
+        .then((response)=>{
+            return response.json();
+          
+        })
+        .then((data)=>{
+
+          if(data.error){
+            loader.style.display="none";
+            return Swal.fire(data.error);
+          }else if(data.paymentMethod==="paypal"){
+            window.location.href = `/user/paypal?action=${action}&address=${json_form.address}&coupon=${json_form.couponCode}`;
+          }else if(data.paymentMethod==="razorpay"){
+
+            fetch("/user/razorpay-createOrder",{
           method:"POST",
           headers:{
             "Content-Type":"application/json"
@@ -520,6 +543,7 @@
       })
       .then((response)=>response.json())
       .then(data=>{
+        loader.style.display="none";
         var options = {
           "key": "rzp_test_zuuyQNQOwzCbtw", // Enter the Key ID generated from the Dashboard
           "amount": data.orderprice, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
@@ -598,49 +622,33 @@
 
       rzp1.open();
       })
-      }else{
-
-        fetch("/user/checkout",{
-          method:"POST",
-          headers:{
-            "Content-Type":"application/json"
-          },
-          body:JSON.stringify({
-            json_form,
-            action
-        })
-        })
-        .then((response)=>{
-            return response.json();
-          
-        })
-        .then((data)=>{
-          if(data.error){
-            return Swal.fire(data.error);
+          }else{
+            loader.style.display="none";
+            Swal.fire({
+                title: 'Order Placed',
+                text: 'Your Order has been placed.',
+                icon: 'success',
+                showCancelButton: true,
+                cancelButtonText: 'Continue Browsing',
+                showConfirmButton: true,
+                confirmButtonText: 'Go To Your Order',
+                allowOutsideClick: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '/user/orderDetails/'+data.id;
+                    }else{
+                      window.location.href = '/product-list/list';
+                    }
+                });
           }
-          Swal.fire({
-              title: 'Order Placed',
-              text: 'Your Order has been placed.',
-              icon: 'success',
-              showCancelButton: true,
-              cancelButtonText: 'Continue Browsing',
-              showConfirmButton: true,
-              confirmButtonText: 'Go To Your Order',
-              allowOutsideClick: false
-              }).then((result) => {
-                  if (result.isConfirmed) {
-                      window.location.href = '/user/orderDetails/'+data.id;
-                  }else{
-                    window.location.href = '/product-list/list';
-                  }
-              });
+
         })
         .catch((err)=>{
           Swal.fire("Some Error Occured.");
         })
 
       }
-    }
+    
     /* Checkout END */
   </script>
   

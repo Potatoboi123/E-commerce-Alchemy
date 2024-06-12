@@ -287,8 +287,12 @@
     }
 
     function changeCart(btn,action,id,price){
+
       const loader=document.querySelector(".overlay");
       loader.style.display="flex";
+      
+      const updatedprice=btn.closest("tr").querySelector(".myCell");
+      const inputQuantity=btn.closest("div").querySelector("[name=quantity]");
 
       fetch("/user/updateQuantityCart/"+id,{
               method:"PATCH",
@@ -301,8 +305,6 @@
               return response.json()
             })
             .then((data)=>{
-              const inputQuantity=btn.closest("div").querySelector("[name=quantity]");
-              const updatedprice=btn.closest("tr").querySelector(".myCell");
               if(data.outOfStock){
                 loader.style.display="none";
                 return Swal.fire({
@@ -326,10 +328,10 @@
                 });
               }else if(action){
                 inputQuantity.value=+inputQuantity.value+1
-                updatedprice.textContent=(+updatedprice.textContent+(+price)).toFixed(2)
+                updatedprice.textContent='₹'+(+updatedprice.textContent.slice(1)+(+price)).toFixed(2)
               }else{
                 inputQuantity.value=+inputQuantity.value-1
-                updatedprice.textContent=(+updatedprice.textContent-(+price)).toFixed(2)
+                updatedprice.textContent='₹'+(+updatedprice.textContent.slice(1)-(+price)).toFixed(2)
               }
               const total=document.querySelectorAll(".totalPrice");
               total.forEach((price)=>{

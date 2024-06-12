@@ -184,9 +184,9 @@
                               <td><img src="<%= item.productImage[0] %>" alt="productimage" style="width: 6rem; height: 6rem;"></td>
                               <td><%= item.productName %></td>
                               <% if(order.coupon.discount){ %>
-                              <td>$<%= ((item.discountPrice*item.quantity)*(1-order.coupon.discount/100)).toFixed(2) %></td>
+                              <td>₹<%= ((item.discountPrice*item.quantity)*(1-order.coupon.discount/100)).toFixed(2) %></td>
                               <% }else{%>
-                                <td>$<%= (item.discountPrice*item.quantity).toFixed(2) %></td>
+                                <td>₹<%= (item.discountPrice*item.quantity).toFixed(2) %></td>
                                 <% } %>
                               <td><%= item.status %></td>
                               <% if (index === 0) { %>
