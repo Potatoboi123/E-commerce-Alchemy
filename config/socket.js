@@ -1,6 +1,6 @@
 let io;
 const users={};
-
+const email={};
 module.exports={
     init: httpServer=>{
 
@@ -8,16 +8,17 @@ module.exports={
 
         io.on('connection', (socket) => {
             socket.on('disconnect', () => {
-              console.log('user disconnected');
               delete users[socket.id]
+              delete email[socket.id]
             });
 
-            socket.on("new-user",(name)=>{
-                users[socket.id]=name
+            socket.on("new-user",(data)=>{
+                users[socket.id]=data.name
+                email[socket.id]=data.email
             })
 
             socket.on('chat-message', (msg) => {
-                io.emit('chat-message', {msg,name:users[socket.id]});
+                io.emit('chat-message', {msg,name:users[socket.id],email:email[socket.id]});
               });
           });
           

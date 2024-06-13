@@ -93,7 +93,7 @@
           height: 30px;
           width: 20px;
         }
-        input:-webkit-autofill,
+      input:-webkit-autofill,
       input:-webkit-autofill:hover, 
       input:-webkit-autofill:focus, 
       input:-webkit-autofill:active{
@@ -101,6 +101,16 @@
           -webkit-text-fill-color: #ffffff;
           transition: background-color 5000s ease-in-out 0s;
           box-shadow: inset 0 0 20px 20px #23232329;
+      }
+      ::-webkit-scrollbar-track {
+      background-color: #000000; /* Color of the scrollbar track */
+      }
+      ::-webkit-scrollbar {
+          width: 10px; /* Width of the scrollbar */
+      }
+      ::-webkit-scrollbar-thumb {
+          background-color: #494747; /* Color of the scrollbar thumb */
+          border-radius: 6px; /* Rounded corners of the scrollbar thumb */
       }
     </style>
   </head>

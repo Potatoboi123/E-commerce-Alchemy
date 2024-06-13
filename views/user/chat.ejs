@@ -242,7 +242,7 @@
     const input = document.getElementById("input");
     const messages = document.getElementById("messages");
     let name = "<%= user.name %>";
-   
+    let email="<%= user.email %>"
     form.addEventListener("submit", (e) => {
       e.preventDefault();
       if (input.value) {
@@ -251,7 +251,7 @@
       }
     });
 
-    socket.emit("new-user",name);
+    socket.emit("new-user",{name,email});
     
     socket.on("chat-message", (data) => {
       const dataContainer = document.createElement('div');

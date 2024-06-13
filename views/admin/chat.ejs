@@ -103,7 +103,7 @@
           }
         });
     
-        socket.emit("new-user",name);
+        socket.emit("new-user",{name,email:"Admin"});
         
         socket.on("chat-message", (data) => {
           const dataContainer = document.createElement('div');
@@ -111,7 +111,7 @@
           const user = document.createElement("p");
           const item = document.createElement("p");
           item.textContent = data.msg;
-          user.textContent=data.name;
+          user.textContent=`${data.name}  ${data.email}`;
           dataContainer.appendChild(user);
           dataContainer.appendChild(item);
           messages.appendChild(dataContainer)

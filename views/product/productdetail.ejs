@@ -53,6 +53,17 @@
 		.img-container{
 			overflow: hidden;
 		}
+		::-webkit-scrollbar-track {
+      background-color: #000000; /* Color of the scrollbar track */
+      }
+      ::-webkit-scrollbar {
+          width: 10px; /* Width of the scrollbar */
+      }
+      ::-webkit-scrollbar-thumb {
+          background-color: #494747; /* Color of the scrollbar thumb */
+          border-radius: 6px; /* Rounded corners of the scrollbar thumb */
+      }
+
 		input:-webkit-autofill,
       input:-webkit-autofill:hover, 
       input:-webkit-autofill:focus, 
@@ -115,7 +126,7 @@
 								<a href="#" class="mr-2" style="color: #ffffff;">500 <span style="color: #bbb;">Sold</span></a>
 							</p>
 						</div>
-    				<p class="price"><span style="color: #bbb;">$<%= product.discountPrice %></span></p>
+    				<p class="price"><span style="color: #bbb;">₹<%= product.discountPrice %></span></p>
 					<% if(product.stock==0){ %>
 						<h2 style="color: white;">Sold Out</h2>
 						<p style="color: white;">This item is currently out of stock.</p>
@@ -150,7 +161,7 @@
             <div class="nav nav-pills d-flex text-center" id="v-pills-tab" role="tablist" aria-orientation="vertical">
               <a class="nav-link ftco-animate active mr-lg-1" id="v-pills-1-tab" data-toggle="pill" href="#v-pills-1" role="tab" aria-controls="v-pills-1" aria-selected="true" style="background: transparent;color: rgb(255, 255, 255);">Description</a>
 
-              <a class="nav-link ftco-animate mr-lg-1" id="v-pills-2-tab" data-toggle="pill" href="#v-pills-2" role="tab" aria-controls="v-pills-2" aria-selected="false" style="background: transparent;color: rgb(255, 255, 255);" >Manufacturer</a>
+<!--               <a class="nav-link ftco-animate mr-lg-1" id="v-pills-2-tab" data-toggle="pill" href="#v-pills-2" role="tab" aria-controls="v-pills-2" aria-selected="false" style="background: transparent;color: rgb(255, 255, 255);" >Manufacturer</a> -->
 
               <a class="nav-link ftco-animate" id="v-pills-3-tab" data-toggle="pill" href="#v-pills-3" role="tab" aria-controls="v-pills-3" aria-selected="false" style="background: transparent;color: rgb(255, 255, 255);">Reviews</a>
 
@@ -167,12 +178,12 @@
               	</div>
               </div>
 
-              <div class="tab-pane fade" id="v-pills-2" role="tabpanel" aria-labelledby="v-pills-day-2-tab">
+<!--               <div class="tab-pane fade" id="v-pills-2" role="tabpanel" aria-labelledby="v-pills-day-2-tab">
               	<div class="p-4" style="background: black;">
 	              	<h3 class="mb-4" style="color: rgb(255, 255, 255);">Manufactured By Liquor Store</h3>
 	              	<p>On her way she met a copy. The copy warned the Little Blind Text, that where it came from it would have been rewritten a thousand times and everything that was left from its origin would be the word "and" and the Little Blind Text should turn around and return to its own, safe country. But nothing the copy said could convince her and so it didn’t take long until a few insidious Copy Writers ambushed her, made her drunk with Longe and Parole and dragged her into their agency, where they abused her for their.</p>
               	</div>
-              </div>
+              </div> -->
               <div class="tab-pane fade" id="v-pills-3" role="tabpanel" aria-labelledby="v-pills-day-3-tab">
               	<div class="row p-4" style="background: black;">
 						   		<div class="col-md-7">
