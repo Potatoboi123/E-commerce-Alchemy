@@ -18,7 +18,6 @@ exports.isUser=async (req,res,next)=>{
             res.redirect("/user/login")
     }
 
-        /* next() */
     }
 exports.isAdmin=(req,res,next)=>{
     if(req.session.admin){
@@ -28,5 +27,4 @@ exports.isAdmin=(req,res,next)=>{
             res.redirect("/admin")
         }
 
-        /* next(); */
     }
