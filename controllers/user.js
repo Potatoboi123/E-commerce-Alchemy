@@ -70,6 +70,10 @@ exports.postLogin=async (req,res,next)=>{
     const {signin_email,signin_password}=req.body;
     try{
         const user=await User.findOne({email:signin_email})
+        console.log(user)
+        if(!user){
+            return res.status(404).json({message:"Invalid Username Or Password"})
+        }
         if(user.googleId){
             return res.status(401).json({message:"Account Signed in With Google"})
         }
@@ -83,6 +87,7 @@ exports.postLogin=async (req,res,next)=>{
                 return res.status(401).json({message:"Invalid Username Or Password"})
             }
     }catch(err){
+        console.log(err.message)
         return res.status(401).json({message:err.message})
     }   
 }
@@ -107,7 +112,7 @@ exports.postLogout=async (req,res,next)=>{
 
 exports.postSignup=async (req,res,next)=>{
     
-    const {action,formdata:{signup_name,signup_email,signup_password,signup_referral,otp}}=req.body
+    const {formdata:{signup_name,signup_email,signup_password,signup_referral}}=req.body
     
     try{
             const exist=await User.findOne({email:signup_email})

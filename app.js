@@ -13,6 +13,7 @@ const nocache=require("nocache")
 const userRoutes=require("./routes/user.js")
 const adminRoutes=require("./routes/admin.js")
 const productRoutes=require("./routes/product.js")
+const errorRoutes=require("./controllers/error.js")
 const passportSetup=require("./config/passport-setup.js")
 
 const app=express();
@@ -45,15 +46,7 @@ app.use("/user",userRoutes);
 app.use("/admin",adminRoutes);
 app.use(productRoutes);
 
-app.use((req,res,next)=>{
-    let userName;
-    if(req.session.user){
-        userName=req.session.user
-    }else{
-        userName=null
-    }
-    res.render("errorPage",{userName})
-})
+app.use(errorRoutes.get404);
 
 mongoose.connect(MONGODB_URI)
 .then(()=>{

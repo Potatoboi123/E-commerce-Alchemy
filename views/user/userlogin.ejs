@@ -73,7 +73,7 @@
 
             <h2>Sign In</h2>
 
-            <div class="errormessage_signin"><p></p></div>
+            <div class="errormessage_signin" style="background-color: white;"><p style="padding: 0"></p></div>
 
             <div class="input-box">
               <span class="icon"><i class='bx bx-envelope'></i></span>
@@ -109,7 +109,7 @@
 
             <h2>Sign Up</h2>
 
-              <div class="errormessage_signup" style="display: flex;"><p></p></div>
+              <div class="errormessage_signup" style="display: flex;background-color: white;"><p style="padding: 0;margin:0"></p></div>
 
             <div class="input-box">
               <span class="icon"><i class='bx bxs-user'></i></span>
@@ -157,7 +157,7 @@
             <h2>Enter The Verification Code</h2>
             <h2>Sent To Your Email</h2>
 
-            <div class="resend_otp_message"><p></p></div>
+            <div class="resend_otp_message" style="background-color: white;"><p style="padding: 0"></p></div>
 
             <div class="input-box">
               <span class="icon"><i class='bx bx-envelope'></i></span>
@@ -183,7 +183,7 @@
 
             <h2>Enter Your Email</h2>
 
-            <div class="forgot_email_message"><p></p></div>
+            <div class="forgot_email_message" style="background-color: white;"><p style="padding: 0;"></p></div>
 
             <div class="input-box">
               <span class="icon"><i class='bx bx-envelope'></i></span>
@@ -207,7 +207,7 @@
               <h2>Enter The Verification Code</h2>
               <h2>Sent To Your Email</h2>
 
-            <div class="forgot_otp_message"><P></P></div>
+            <div class="forgot_otp_message" style="background-color: white;"><p style="padding: 0"></p></div>
 
             <div class="input-box">
               <span class="icon"><i class='bx bxs-lock-alt'></i></span>
@@ -228,7 +228,7 @@
 
             <h2>Enter Your New Password</h2>
 
-            <div class="forgot_password_message"><P></P></div>
+            <div class="forgot_password_message" style="background-color: white;"><p style="padding: 0"></p></div>
 
             <div class="input-box">
               <span class="icon"><i class='bx bxs-lock-alt'></i></span>
@@ -443,10 +443,11 @@
               window.location.href="/"
             }
             else{
-              return response.json()
+              return response.json().then(data => {
+              throw new Error(data.message || "Login failed. Please try again."); // Default message if no specific message from server
+            });
             }
           })
-          .then((data)=>{throw new Error(data.message)})
           .catch(err=>{
             errorMessageLogin.innerHTML=err.message
             setTimeout(()=>errorMessageLogin.innerHTML="",3000)
