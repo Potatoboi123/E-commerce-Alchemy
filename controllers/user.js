@@ -30,8 +30,6 @@ var instance = new Razorpay({
 
 const transporter = nodemailer.createTransport({
     service:"gmail",
-    port: 465,
-    secure: true, // Use `true` for port 465, `false` for all other ports
     auth: {
         user: process.env.USER,
         pass: process.env.USER_PASSWORD,
