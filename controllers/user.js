@@ -30,7 +30,6 @@ var instance = new Razorpay({
 
 const transporter = nodemailer.createTransport({
     service:"gmail",
-    host: "smtp.gmail.com",
     port: 465,
     secure: true, // Use `true` for port 465, `false` for all other ports
     auth: {
@@ -70,7 +69,6 @@ exports.postLogin=async (req,res,next)=>{
     const {signin_email,signin_password}=req.body;
     try{
         const user=await User.findOne({email:signin_email})
-        console.log(user)
         if(!user){
             return res.status(404).json({message:"Invalid Username Or Password"})
         }

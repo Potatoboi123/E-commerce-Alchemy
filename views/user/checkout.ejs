@@ -444,7 +444,6 @@
       })
       .then((response)=>response.json())
       .then((data)=>{
-        console.log(data)
         if(data.couponCode){
           document.querySelector('[name=couponCode]').value=data.couponCode;
           document.querySelector('.remove-coupon').style.display="block";
@@ -457,6 +456,7 @@
           loader.style.display="none"
           Swal.fire("Coupon Added Successfully");
         }else if(data.notFound){
+          loader.style.display="none"
           Swal.fire({
             icon: 'error',
             title: '404',
@@ -464,8 +464,10 @@
           });
         }
       })
-      .catch((err)=>console.log(err.message))
-      loader.style.display="none"
+      .catch((err)=>{
+        loader.style.display="none"
+        console.log(err.message)
+      })
     }
 
     /* Check Coupon END */
@@ -501,8 +503,8 @@
       /* Validation BEGIN */
       
       if(!json_form.address){
-        return Swal.fire("Add address")
         loader.style.display="none";
+        return Swal.fire("Add address")
       }
 
       /* Validation END */
