@@ -43,10 +43,7 @@ function otpgeneretor(signup_email){
     let secret = authenticator.generateSecret();
     let token = authenticator.generate(secret);
         const info ={
-            from:{
-                name:"Alchemy",
-                address:process.env.USER
-            }, // sender address
+            from:`info@${process.env.DOMAIN_NAME}`, // sender address
             to: signup_email , // list of receivers
             subject: "Verification Code", // Subject line
             text: `Your Verification Code is ${token}`, // plain text body
