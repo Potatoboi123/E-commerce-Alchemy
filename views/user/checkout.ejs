@@ -104,6 +104,16 @@
           transition: background-color 5000s ease-in-out 0s;
           box-shadow: inset 0 0 20px 20px #23232329;
       }
+      ::-webkit-scrollbar-track {
+      background-color: #000000; /* Color of the scrollbar track */
+      }
+      ::-webkit-scrollbar {
+          width: 10px; /* Width of the scrollbar */
+      }
+      ::-webkit-scrollbar-thumb {
+          background-color: #494747; /* Color of the scrollbar thumb */
+          border-radius: 6px; /* Rounded corners of the scrollbar thumb */
+      }
         /*  */
         .modal-content{
         color: white;
@@ -124,6 +134,20 @@
         .form-control:focus {
     border-color: #ced4da; /* Change this to the color you want */
     box-shadow: none; /* Optionally remove box-shadow */
+  }
+  .coupon-form{
+    background-color: black;
+  }
+  .coupon-form div input{    
+    border-top-right-radius: 10px !important;
+    border-bottom-right-radius: 10px !important;
+    border-radius: 10px;
+  }
+  .coupon-form div button{
+    background-color: #b7472a;
+    margin-left: 10px;
+    border-radius: 10px;
+
   }
     </style>
   </head>
@@ -203,7 +227,7 @@
             </li>
           </ul>
   
-          <form class="card p-2" onsubmit="checkCouponCode(event)">
+          <form class="card p-2 coupon-form" onsubmit="checkCouponCode(event)">
             <div class="input-group">
               <input type="text" class="form-control" name="checkCoupon" placeholder="Coupon code">
               <button type="submit" class="btn btn-secondary">Redeem</button>
