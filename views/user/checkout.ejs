@@ -416,12 +416,12 @@
         .then((response)=>{
           if(!response.ok){
             return response.json()
+            .then((data)=>{
+            Swal.fire(data.message);
+        })
           }else{
             window.location.href="/user/checkout";
           }
-        })
-        .then((data)=>{
-          Swal.fire(data.message);
         })
         .catch((err)=>{
           Swal.fire("Some Error Occured.");

@@ -29,10 +29,8 @@ var instance = new Razorpay({
 })
 
 const transporter = nodemailer.createTransport({
-    service:"gmail",
-    host: 'smtp.gmail.com',
+    host: 'live.smtp.mailtrap.io',
     port: 587,
-    ignoreTLS: false,
     secure: false,
     auth: {
         user: process.env.USER,
