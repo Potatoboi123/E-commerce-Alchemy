@@ -33,7 +33,7 @@ const transporter = nodemailer.createTransport({
     port: 587,
     secure: false,
     auth: {
-        user: process.env.USER,
+        user: process.env.USER_ID,
         pass: process.env.USER_PASSWORD,
     },
 });

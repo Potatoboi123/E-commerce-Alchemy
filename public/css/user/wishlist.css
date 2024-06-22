@@ -1,0 +1,78 @@
+.modal-content{
+    color: white;
+    background-color: rgb(45, 43, 43);
+  }
+  .form-control{
+    background-color: transparent;
+    color: white;
+  }
+  .modal-content ::placeholder {
+    color: #afaaaa; 
+  }
+  .modal-content input:focus::placeholder {
+    color: #afaaaa; 
+  }
+  .mainheading{
+    background-image: url('/images/user/profile-background.jpg');
+    background-size: cover;
+    background-position: center;
+    margin-bottom: 2rem;
+  }
+  .padding{
+    height: 1rem;
+  }
+  .bx.bx-chevron-right.toggle {
+    display: none;
+  }
+  a{
+  text-decoration: none;
+}
+#btn-deletwishlist{
+  background-color: transparent;
+  border: none;
+  color: red;
+  font-size: 27px;
+}
+    .wishlist-item {
+        border: 2px solid #ffffff;
+        border-radius: 10px;
+        background-color: #1c1c1c; /* Dark gray background */
+        transition: transform 0.2s;
+    }
+    .wishlist-item:hover {
+        transform: scale(1.02);
+    }
+    .wishlist-item img {
+        border-radius: 10px;
+    }
+    .wishlist-item a {
+        text-decoration: none;
+        color: #ffffff;
+    }
+    .wishlist-item a:hover {
+        color: #007bff; /* Bootstrap primary color */
+    }
+    ::-webkit-scrollbar-track {
+  background-color: #000000; /* Color of the scrollbar track */
+  }
+  ::-webkit-scrollbar {
+      width: 10px; /* Width of the scrollbar */
+  }
+  ::-webkit-scrollbar-thumb {
+      background-color: #494747; /* Color of the scrollbar thumb */
+      border-radius: 6px; /* Rounded corners of the scrollbar thumb */
+  }
+  @media screen and (max-width: 600px) {
+    .bx.bx-chevron-right.toggle {
+    display: block;
+  }
+}
+input:-webkit-autofill,
+  input:-webkit-autofill:hover, 
+  input:-webkit-autofill:focus, 
+  input:-webkit-autofill:active{
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: #ffffff;
+      transition: background-color 5000s ease-in-out 0s;
+      box-shadow: inset 0 0 20px 20px #23232329;
+  }

@@ -591,14 +591,7 @@ exports.getSalesReport=async (req,res,next)=>{
                 }
             }
           ]);
-          const totalUser=await Order.aggregate([
-            {
-            $match:ordersQuery
-            },{
-                $group:{_id:"$userId",count:{$sum:1}}
-            },
-            {$project:{_id:0}}
-        ])
+          const totalUser=await Order.distinct("userId")
         res.render("admin/salesreport", {
             orders,
             totalCount,
@@ -606,7 +599,7 @@ exports.getSalesReport=async (req,res,next)=>{
             startDate: startDate ? moment(startDate).format('YYYY-MM-DD') : '',
             endDate: endDate ? moment(endDate).format('YYYY-MM-DD') : '',
             filterOption: filterOption,
-            totalUser:totalUser.length>0 ? totalUser[0].count : 0,
+            totalUser:totalUser.length>0 ? totalUser.length : 0,
             current:"sales"
         });
 
