@@ -10,6 +10,7 @@ This repository contains the source code for an E-commerce website built using N
 - Shopping cart and checkout process
 - Payment processing with PayPal and Razorpay
 - Order confirmation and notification emails
+- Live chat support utilizing socket.io
 
 ## Prerequisites
 
